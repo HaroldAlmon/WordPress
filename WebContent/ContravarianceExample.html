@@ -85,17 +85,12 @@ class Collections {
 		for(int i=0; i < src.size(); i++) {
 			dest.set(i, src.get(i)); 
 		}
-		
-		// src.add(new Animal());  // ERROR, insertion not allowed into a covariant type
 	}
 	
 	public static <T> void append(List<? super T> dest , List<? extends T> src ) {
 		for(int i=0; i < src.size(); i++) {
 			dest.add(src.get(i)); 
 		}
-		
-		//Animal animal = dest.get(4); // ERROR, reading a contravariant type is not allowed 
-		Object animal = dest.get(4);   // except into an Object like this
 	}
 }
 
@@ -117,8 +112,7 @@ After append(): I am a mammal
 After append(): I am a mammal
 After append(): I am a mammal
 </pre>
-<p>Here is my informal definition of a contravariant datatype. A contravariant datatype is one  that reverses the subtype relationship with another datatype. If type B is related to type A and B is a subtype of A then B is covariant with A, but if 
-A is the subtype of B, then B is contravariant with A.</p>
+<p>Here is my informal definition of a contravariant datatype. A contravariant datatype is one  that reverses the subtype relationship with another datatype. If type B is related to type A and B is a subtype of A then B is covariant with A, but if A is the subtype of B, then B is contravariant with A.</p>
 <p>This is best understood by running the sample code and understanding how the <em>copy()</em> and <em>append()</em> functions work. The main point to remember about contravariance is that you cannot read the value contained in a contravariant type except if you place the value into an Object.</p>
 
 <p>Why is that the case?</p>
@@ -127,7 +121,7 @@ A is the subtype of B, then B is contravariant with A.</p>
 <pre>public static <T> void append(List<? super T> dest , List<? extends T> src )</pre>
 <p>and examine the <em>List&lt;? super T&gt; dest</em> type, you can see that the generic type is a supertype of T.</p> 
 
-<p>Could you read the <strong>dest</strong> variable and place the result an Animal, Mammal, or Human variable?</p> 
+<p>Could you read the <em>dest</em> variable and place the result an Animal, Mammal, or Human variable?</p> 
 
 <p>No, because the <em>apply()</em> function can receive any supertype of <strong>T</strong> including Object. If <em>List&lt;Object&gt;</em> is passed to <em>append()</em>, you cannot read one of the Objects from the list and place it in an Animal type because that violates the rules of polymorphism.</p>
 <p>If you try reading the contravariant type you will get a nasty compiler error similar to:</p>
@@ -147,13 +141,11 @@ A is the subtype of B, then B is contravariant with A.</p>
 </table>
 
 <br>
-<p>You can however always read the dest variable into an Object variable. Since Object is the superclass of every class, this works. So the following will always work:</p>
+<p>You can however always read the <em>dest</em> variable into an Object variable. Since Object is the superclass of every class, this works. So the following will always work:</p>
 <pre>Object object = new AnyClass(); // will always compile</pre>
 
 <br>
-<h3>Polymorphism Rules the Roost</h3>
-<p>Why would you need contravariant types?</p>
+<p>Why Would You Need Contravariant Types?</p>
 <p> These types are useful when writing generic classes that have functions that work on generic types. The Java Collections class is an example. If you look at the <em>copy()</em> function, you will see contravariant and covariant types in the signature. This allows the function to work with many types not just the single type T.</p>
-<p>That sums up my explanation of covariance and contravaiance.</p>
 </body>
 </html>
