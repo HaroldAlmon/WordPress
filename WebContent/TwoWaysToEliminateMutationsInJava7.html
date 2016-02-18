@@ -5,17 +5,22 @@
 <title>Insert title here</title>
 </head>
 <body>
-<h3>
-Stuck on Java 7?
-</h3>
+<h3>Stuck on Java 7?</h3>
 <p>
 Java 8 finally brings some function idioms to the language. Given that many applications are still using Java version 5, 6, and 7, is there any way to use functional idioms in these versions that do not have direct support for functional programming?
 </p>
 <p>
-After solving a ProjectEuler problem with Scala, I went back to my Java 8 solution and created a functional solution using the Java 8 Stream API and a second version using just Java 7 features.
+After solving a ProjectEuler problem with Scala and imperative Java, I went back to my Java 8 solution and created a functional solution using the Java 8 Stream API and a second functional version using just Java 7 features. The imperative version is at LINK and the function version is at LINK.
 </p>
+<strong>Here are the versions I coded:</strong>
+<ol>
+<li>Java 7 Imperative</li>
+<li>Java 7 Simulate Functional Idiom</li>
+<li>Java 8 Functional</li>
+<li>Scala</li>
+</ol>
 <p>
-The Java 7 solution uses tail recursion and Single Abstract Method (SAM) Interfaces to eliminate mutations and simulate lambda expressions. The solution is not optimal because the tail recursion is not eliminated by the Java 7 compiler and the SAM objects are actually anonymous classes that generate an object for every invocation. The solution works for small data sets but would cause a stack overflow with a large input data set. Nevertheless, creating the solution demonstrates that the functional idiom can be applied to older Java versions if you accept the constraints of the implementation.  
+The functional Java 7 solution uses tail recursion and Single Abstract Method (SAM) Interfaces to eliminate mutations and simulate lambda expressions. The solution is not optimal because the tail recursion is not eliminated by the Java 7 compiler and the SAM objects are actually anonymous classes that generate an object for every invocation. The solution works for small data sets but would cause a stack overflow with a large input data set. Nevertheless, creating the solution demonstrates that the functional idiom can be applied to older Java versions if you accept the constraints of the implementation.  
 </p>
 <p>
 Using a functional programming language like Scala completely changed my thought process when designing solutions for problems. I now look for ways to eliminate mutations and replace embedded calculations in pre-Java 8 code by using a SAM Interface that simulate lambda expressions. The resulting Java code looks like a lambda when executed. Unfortunately the implementation is somewhat more difficult to read than the implementation of a lambda expression in Scala.  
@@ -130,6 +135,7 @@ private static int getColProdImpl(int row,  int col, int[][] matrix,int previous
 </pre>
 
 <h3>Java 8 Version</h3>
+Here is the Java 8 version of the same code. This code is shorter and much easier to understand due to the fluent coding style.
 <pre>
 public static int columnProduct(final int[][] matrix, int upperRange, BiFunction<Integer, Integer, Integer> calcProduct) {
 	return IntStream.range(0, upperRange)
@@ -144,7 +150,7 @@ private static int getColProd(int row, final int[][] matrix, BiFunction<Integer,
 		.max()
 		.getAsInt();
 }
-<pre>
+</pre>
 
 <pre>
 public static int rowProduct(final int[][] matrix, BiFunction<Integer, Integer, Integer> calcProduct) {
@@ -162,13 +168,33 @@ private static int getRowProd(int col, final int[][] matrix, BiFunction<Integer,
 }
 </pre>
 
+<h3>Scala Version</h3>
+The Scala version is the shortest and the easiest to understand. When I look at it, it makes me wonder when Java is going to get for-comprehensions.
+<pre>
+ def columnProduct(matrix: Array[Array[Int]], upperRange: Int, calcProduct: (Int, Int) => Int) = {
+   (for (row <- 0 to upperRange;
+         col <- 0 to matrix(0).length - 4)
+     yield calcProduct.apply(row, col))
+     .max
+ }
 
+ def rowProduct(matrix: Array[Array[Int]], calcProduct: (Int, Int) => Int) = {
+   (for (col <- matrix(0).indices;
+         row <- 0 to matrix(0).length - 4)
+     yield calcProduct.apply(row, col))
+     .max
+ }
+</pre>
 
-Conclusion
-</h3>
-<p>If you compare the imperative version to the Java 7 functional version, the functional version is slightly longer. The real problem with the functional version is the recursion that can lead to a stack overflow given a large input data set. If a function fails after 10,000 iterations, is it really correct? What magic number number will lead to a failure? Who knows, so recursion without a compiler that can optimize tail recursion is not suitable for enterprise level software.</p>
-<p>The SAM Interface looks like a useable pattern for pre Java 8 code because it just uses object instantiation. Java 8' dynamic invocation without a stack frame is better but at least the SAM object can be collected by the garbage collector.  The one caveat is that a SAM combined with a recursive function will consume heap memory possible causing an out-of-heap-space error message and program failure.</p>
-<p>The bottom line is that with pre-Java 8 versions your options to eliminate mutation are extremely limited.</p> 
+<h3>Conclusion</h3>
+<p>
+If you compare the imperative version to the Java 7 functional version, the functional version is slightly longer. The real problem with the functional version is the recursion that can lead to a stack overflow given a large input data set. If a function fails after 10,000 iterations, is it really correct? What magic number number will lead to a failure? Who knows, so recursion without a compiler that can optimize tail recursion is not suitable for enterprise level software.
+</p>
+<p>
+The SAM Interface looks like a useable pattern for pre-Java 8 code because it just uses object instantiation. Java 8's dynamic function invocation without a stack frame is better but at least the SAM object can be collected by the garbage collector.  The one caveat is that a SAM combined with a recursive function will consume heap memory possible causing an out-of-heap-space error message and program failure.
+</p>
+<p>
+The bottom line is that with pre-Java 8 versions your options to eliminate mutation are extremely limited.
 </p>
 </body>
 </html>
