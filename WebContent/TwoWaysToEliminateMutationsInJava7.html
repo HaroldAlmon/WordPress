@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+<h3>
+Stuck on Java 7?
+</h3>
+<p>
+Java 8 finally brings some function idioms to the language. Given that many applications are still using Java version 5, 6, and 7, is there any way to use functional idioms in these versions that do not have direct support for functional programming?
+</p>
+<p>
+After solving a ProjectEuler problem with Scala, I went back to my Java 8 solution and created a functional solution using the Java 8 Stream API and a second version using just Java 7 features.
+</p>
+<p>
+The Java 7 solution uses tail recursion and Single Abstract Method (SAM) Interfaces to eliminate mutations and simulate lambda expressions. The solution is not optimal because the tail recursion is not eliminated by the Java 7 compiler and the SAM objects are actually anonymous classes that generate an object for every invocation. The solution works for small data sets but would cause a stack overflow with a large input data set. Nevertheless, creating the solution demonstrates that the functional idiom can be applied to older Java versions if you accept the constraints of the implementation.  
+</p>
+<p>
+Using a functional programming language like Scala completely changed my thought process when designing solutions for problems. I now look for ways to eliminate mutations and replace embedded calculations in pre-Java 8 code by using a SAM Interface that simulate lambda expressions. The resulting Java code looks like a lambda when executed. Unfortunately the implementation is somewhat more difficult to read than the implementation of a lambda expression in Scala.  
+</p>
+<h3>
+Using a SAM Interface to Simulate a Lambda Expression
+</h3>
+<p>The first step in converting from imperative to pseudo functional programming was to convert the embedded matrix calculation to SAMs like the following.
+</p>
+<pre>
+MatrixProduct columnProduct = new MatrixProduct() {
+	@Override
+	public int product(int[][] matrix, int row, int col) {
+		return    matrix[row][col] 
+				* matrix[row][col + 1] 
+				* matrix[row][col + 2] 
+				* matrix[row][col + 3];
+	}
+};
+</pre>
+<p>
+That code above replaces the following logic embedded in the original code.
+</p>
+<pre>
+product = max(product, matrix[row][col] * matrix[row][col+1] * matrix[row][col+2] * matrix[row][col+3]);
+</pre>
+<p>
+The functional code is a lot longer but obvious some of that length is due to the separation of the matrix calculation into four lines of code. The SAM is also passed to a function so the four functions in the imperative version have been replaced with two functions in the functional version. 
+</p>
+<p>
+The original embedded calculation is replaced with a call to the SAM.
+</p>
+<pre>
+final int product = matrixProduct.product(matrix, row, col);
+</pre>
+<p>
+Doing this is somewhat like factoring out the business logic that I might want to convert to a lambda expression when the code is transitioned to a Java version that supports lambda expressions. Doing this seems like an academic exercise but it changes the way you approach calculations and prepares you for the transition to a functional programming language. 
+</p>
+<h3>
+Using Recursion to Eliminate Mutations
+</h3>
+<p>
+In order to eliminate the for-loops in the imperative version, I implemented tail recursion but the result was really complicated so I converted the functions back to normal recursion. Since Java, at this time, does not perform tail recursion optimization, there is no benefit to using tail recursion.
+</p>
+<p>
+The following was the Java code that replaced a nested for-loop to iterate over the columns and rows of the matrix.
+</p>
+<p>Enumerate column with its helper function.</p>
+<pre>
+public static int enumerateCol(int[][] matrix, MatrixProduct matrixProduct) {
+	return enumerateColImpl(0, 0, matrix, matrixProduct);
+}
+
+private static int enumerateColImpl(int col, int product, int[][] matrix, MatrixProduct matrixProduct) {
+	if (col >=  matrix[0].length) 
+		return product;
+	return enumerateColImpl( col + 1, max(product, getRowProd(col, matrix, matrixProduct)), matrix, matrixProduct);
+}
+</pre>
+<p>Enumerate row with its helper function.</p>
+<pre>	
+private static int getRowProd(int col, int[][] matrix, MatrixProduct matrixProduct) {
+	return getRowProdImpl(col, matrix, 0, 0, matrixProduct);
+}
+
+private static int getRowProdImpl(int col, int[][] matrix, int row, int previousProduct, MatrixProduct matrixProduct) {
+	if (row > matrix.length - 4)
+		return previousProduct;
+	
+	final int product = matrixProduct.apply(matrix, row, col);
+	return getRowProdImpl(col, matrix, row + 1, max(previousProduct, product), matrixProduct);
+}
+</pre>
+I changed this to use regular recursion that makes the code much shorter.
+<pre>
+private int enumerateCol(int col, int[][] matrix, MatrixProduct matrixProduct) {
+	if (col >=  matrix[0].length) 
+		return 0;
+	int product = getRowProd(col, 0, matrix, matrixProduct);
+	return max( product, enumerateCol(col + 1, matrix, matrixProduct));
+}
+</pre>
+<pre>
+private int getRowProd(int col, int row, int[][] matrix, MatrixProduct matrixProduct) {
+	if (row > matrix.length - 4)
+		return 0;
+	
+	final int product = matrixProduct.apply(matrix, row, col);
+	return  max(product, getRowProd(col, row + 1, matrix, matrixProduct));
+}
+</pre>
+<p>
+<h3>
+Conclusion
+</h3>
+If you compare the imperative version to the Java 7 functional version, the functional version is slightly longer. The real problem with the functional version is the recursion that can lead to a stack overflow given a large input data set. If a function fails after 10,000 iterations then is it really correct? What magic number number will lead to a failure? Who knows, so recursion without a compiler that can optimize tail recusion is not suitable for enterprise level software. 
+</p>
+
+</pre>
+</body>
+</html>
