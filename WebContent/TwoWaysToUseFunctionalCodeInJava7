@@ -184,7 +184,7 @@ If you compare the imperative version to the Java 7 functional version, the func
 The SAM Interface looks like a useable pattern for pre-Java 8 code because it just uses object instantiation. Java 8's dynamic function invocation that does not create a stack frame is better but at least the SAM object can be freed by the garbage collector. The one caveat is that a SAM combined with a recursive function will consume heap memory possibly causing an out-of-heap-space error message and program failure.
 </p>
 <p>
-The bottom line is that with pre-Java 8 versions your options to eliminate mutations are extremely limited.
+The bottom line is that with pre-Java 8 versions your options to use functional code are extremely limited.
 </p>
 </body>
 </html>
