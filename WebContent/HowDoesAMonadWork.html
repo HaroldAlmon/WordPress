@@ -2,6 +2,8 @@
 <html>
 <head>
 <meta charset="ISO-8859-1">
+<title>Insert title here</title>
+<link rel="stylesheet" type="text/css" href="WordPress.css">
 </head>
 <body>
 <p>Once you understand how a monad works, you lose the ability to explain it to anyone else. That might be true but I am going to try to explain what a monad is without referring to abstract category theory concepts.</p>
@@ -17,8 +19,8 @@
 
 <p>A monad provides the capability of executing a lambda expression and then capturing the result of the computation in a monad.  The capture of the result allows the chaining of lambda expressions that are applied to the data contained in the monad. <strong></p>
 
-<a href="http://www.translationdata.com/wp-content/uploads/2016/02/IMG_4157-e1455493909130.jpg"><img class="alignleft wp-image-2986 size-large" src="http://www.translationdata.com/wp-content/uploads/2016/02/IMG_4157-1024x768.jpg" alt="IMG_4157" width="225" height="300" /></a>
-<p></>A monad works by offering two very important functions that are common to all monads, <em>map</em> and <em>flatMap</em>.</strong> The purpose of <em>map</em> is to apply a lambda expression and then place the result of the evaluation in the monad. The purpose of <em>flatMap</em> is to apply a lambda expression and return the evaluation. <strong><em>flatMap</em> DOES NOT place the evaluation result in a monad because the lambda expression returns a value that is already in a monad.</strong></p>
+<a href="http://www.translationdata.com/wp-content/uploads/2016/02/IMG_4157-e1455493909130.jpg"><img class="alignleft wp-image-2986 size-large" src="http://www.translationdata.com/wp-content/uploads/2016/02/IMG_4157-1024x768.jpg" alt="IMG_4157" width="425" height="300" /></a>
+<p>A monad works by offering two very important functions, <em>map</em> and <em>flatMap</em>.</strong> The purpose of <em>map</em> is to apply a lambda expression and then place the result of the evaluation into a new monad. The purpose of <em>flatMap</em> is to apply a lambda expression and return the result of the evaluation. <strong><em>flatMap</em> DOES NOT place the evaluation result in a monad because the lambda expression returns a value that is already in a monad.</strong></p>
 <p>Keeping the result in a monad is the key to how a monad can be chained with other lambda expressions. The <em>flatMap</em> allows function composition. This is useful for languages like Haskell and Scala that have for-comprehensions. A for-comprehension is mapped by the compiler to composite lambda expressions. See <a href="https://www.youtube.com/watch?v=Mw_Jnn_Y5iA" target="_blank">Declutter Your Code With Monadic Design</a> for a demonstration of how this works. Let's have a look at a simple monad class written in Scala and see how it works.</p>
 
 <p>The following Scala code demonstrates how a monad works but also shows why two functions, <em>map</em> and <em>flatMap</em> are necessary to implement a monad. You could just have <em>flatMap</em>em> but then the Monad could not support a for-comprehension. for-comprehensions look somewhat like a traditional for-loops but the construct is logically equivalent to a lambda expression.</p>
@@ -26,19 +28,9 @@
 <h3>The SingleArgumentMonad Class</h3>
 
 <pre>package com.translationdata.prototypes
-
-// Note that the constructor creates the value-field...
 class SingleArgumentMonad[A](val value: A) {
-  // This function extracts the value-field from the monad and passes
-  // it to f() and wraps the result from f() of type B into a Monad.
-  // The value-field is mapped to the input of the lambda expression.
   def map[B](f:A => B) = new SingleArgumentMonad(f(value))
-
-  // This function extracts the value-field from the monad and passes
-  // back the result of f() which is a Monad that wraps type B...
   def flatMap[B](f:A => SingleArgumentMonad[B]) = f(value)
-
-  // Need this function to get the string value of the value-field...
   override def toString = value.toString
 }
 </pre>
@@ -91,6 +83,6 @@ Result = 9
 	<li>Evaluate 4 + 5 which yields 9. So 9 is the result BUT the monad member function in the class wraps the 9 in a SingleArgumentMonad. So the flatMapAndMapResult variable ends up containing a monad that contains a 9.</li>
 </ol>
 
-<p>I could stop here but some additional examples should demonstrate why two functions are necessary for every monad. If you understand why a monad cannot function with just <em>map</em> or just <em>flatMap</em> then you should understand how monads work.</p>
+<p>I could stop here but some additional examples should demonstrate why two functions are necessary for every monad. If you understand why a monad cannot function with just <em>map</em> or just <em>flatMap</em>, then you should understand how monads work.</p>
 </body>
 </html>

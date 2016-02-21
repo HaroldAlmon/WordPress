@@ -2,7 +2,8 @@
 <html>
 <head>
 <meta charset="ISO-8859-1">
-<title>Insert title here</title>
+<title>Two Ways To Use Functional Code In Java 7</title>
+<link rel="stylesheet" type="text/css" href="WordPress.css">
 </head>
 <body>
 <h3>Stuck on Java 7?</h3>
@@ -10,14 +11,15 @@
 Java 8 finally brings some function idioms to the language. Given that many applications are still using Java version 5, 6, and 7, is there any way to use functional idioms in these versions that do not have direct support for functional programming?
 </p>
 <p>
-After solving a ProjectEuler problem with Scala and imperative Java, I went back to my Java 8 solution and created a functional solution using the Java 8 Stream API and a second functional version using just Java 7 features. The imperative version is at LINK and the function version is at LINK.
+After solving a ProjectEuler problem with Scala and imperative Java>,
+ I went back to my Java 8 solution and created a functional solution using the Java 8 Stream API and a second functional version using just Java 7 features.</a>.
 </p>
 <strong>Here are the versions I coded:</strong>
 <ol>
-<li>Java 7 Imperative</li>
-<li>Java 7 Simulate Functional Idiom</li>
-<li>Java 8 Functional</li>
-<li>Scala</li>
+<li><a href="https://github.com/HaroldAlmon/ProjectEuler/blob/master/src/main/java/com/translationdata/p010/P011_LargestProduct.java" target="_blank">Java 7 imperative</a></li>
+<li><a href="https://github.com/HaroldAlmon/ProjectEulerJavaFunc/blob/master/src/main/java/com/translationdata/p010/P011_LargestProduct_SAM.java" target="_blank">Java 7 Simulate Functional Idiom</a></li>
+<li><a href="https://github.com/HaroldAlmon/ProjectEulerJavaFunc/blob/master/src/main/java/com/translationdata/p010/P011_LargestProduct.java" target="_blank">Java 8 Functional</a></li>
+<li><a href="https://github.com/HaroldAlmon/ProjectEulerScala/blob/master/src/main/scala/com/translationdata/P010/P011_LargestProduct.scala" target="_blank">Scala</a></li>
 </ol>
 <p>
 The functional Java 7 solution uses tail recursion and Single Abstract Method (SAM) Interfaces to eliminate mutations and simulate lambda expressions. The solution is not optimal because the tail recursion is not eliminated by the Java 7 compiler and the SAM objects are actually anonymous classes that generate an object for every invocation. The solution works for small data sets but would cause a stack overflow with a large input data set. Nevertheless, creating the solution demonstrates that the functional idiom can be applied to older Java versions if you accept the constraints of the implementation.  
@@ -26,7 +28,7 @@ The functional Java 7 solution uses tail recursion and Single Abstract Method (S
 Using a functional programming language like Scala completely changed my thought process when designing solutions for problems. I now look for ways to eliminate mutations and replace embedded calculations in pre-Java 8 code by using a SAM Interface that simulate lambda expressions. The resulting Java code looks like a lambda when executed. Unfortunately the implementation is somewhat more difficult to read than the implementation of a lambda expression in Scala.  
 </p>
 <h3>
-Using a SAM Interface to Simulate a Lambda Expression
+Method 1 - Use a SAM Interface to Simulate a Lambda Expression
 </h3>
 <p>The first step in converting from imperative to pseudo functional programming was to convert the embedded matrix calculation to SAMs like the following.
 </p>
@@ -57,23 +59,18 @@ The original embedded calculation is replaced with a call to the SAM.
 final int product = matrixProduct.apply(matrix, row, col);
 </pre>
 <p>
-Notice how the call to the <em>apply()</em> function looks very similar to the Scala syntax to execute a lambda expresison. With Scala, matrixProduct would be the lambda and apply would execute the lambda. In Java, <em>matrixProduct</em> is an object and <em>apply()</em> is a function name that I chose to make the code look like a Scala lambda execution.
+Notice how the call to the <em>apply()</em> function looks very similar to the Scala syntax to execute a lambda expresison. With Scala, <em>matrixProduct</em> would be the lambda and <em>apply</em> would execute the lambda. In Java, <em>matrixProduct</em> is an object and <em>apply()</em> is a function name that I chose to make the code look like a Scala lambda execution.
 </p>
 <p>
 Doing this is somewhat like factoring out the business logic that I might want to convert to a lambda expression when the code is transitioned to a Java version that supports lambda expressions. Doing this seems like an academic exercise but it changes the way you approach calculations and prepares you for the transition to a functional programming language. 
 </p>
 <h3>
-Using Recursion to Eliminate Mutations
+Methods 2 - Use Recursion to Eliminate Mutations
 </h3>
 <p>
-In order to eliminate the for-loops in the imperative version, I implemented tail recursion but the result was really complicated so I converted the functions back to normal recursion. Since Java, at this time, does not perform tail recursion optimization, there is no benefit to using tail recursion.
+In order to eliminate the for-loops in the imperative version, I implemented tail recursion. The following is the Java code that replaced a nested for-loop to iterate over the columns and rows of the matrix.
 </p>
-<p>
-The following was the Java code that replaced a nested for-loop to iterate over the columns and rows of the matrix.
-</p>
-
-
-<h3>Row Product recursion with its helper function.</h3>
+<h3>Matrix Row Product recursion with its helper function.</h3>
 
 <p><strong>Outer loop.</strong></p>
 <pre>
@@ -104,7 +101,7 @@ private static int getRowProdImpl(int col, int row, int[][] matrix, int previous
 </pre>
 
 
-<h3>Column Product recursion with its helper function.</h3>
+<h3>Matrix Column Product recursion with its helper function.</h3>
 
 <p><strong>Outer loop.</strong></p>
 <pre>
@@ -134,67 +131,60 @@ private static int getColProdImpl(int row,  int col, int[][] matrix,int previous
 }
 </pre>
 
-<h3>Java 8 Version</h3>
-Here is the Java 8 version of the same code. This code is shorter and much easier to understand due to the fluent coding style.
+<h3>Matrix Product Java 8 Version</h3>
+<p>Here is the Java 8 version of the same code. This code is much easier to understand due to the fluent coding style.</p>
+<p>I decided to apply the DRY (Don't Repeat Yourself) principle and reduced the four function calculations into two calculations.</p>
+<p><strong>Outer loop.</strong></p>
 <pre>
-public static int columnProduct(final int[][] matrix, int upperRange, BiFunction<Integer, Integer, Integer> calcProduct) {
-	return IntStream.range(0, upperRange)
-		.map(row -> getColProd(row, matrix, calcProduct))
+private int matrixCellProduct(final int[][] matrix, BiFunction<Integer, Integer, Integer> calcProduct, int rowBuffer, int columnBuffer) {
+	return IntStream.range(0, matrix.length - 1 - rowBuffer)
+		.map(row -> calculateCellProduct(row, matrix, calcProduct))
 		.max()
 		.getAsInt();
 }
-
-private static int getColProd(int row, final int[][] matrix, BiFunction<Integer, Integer, Integer> calcProduct) {
+</pre>
+<p><strong>Inner Loop</strong></p>
+<pre>
+private int calculateCellProduct(int row, final int[][] matrix, BiFunction<Integer, Integer, Integer> calcProduct) {
 	return IntStream.range(0, matrix[0].length - 4)
 		.map( col -> calcProduct.apply(row, col) )
 		.max()
 		.getAsInt();
 }
 </pre>
-
+<p>I also wanted to refactor the cell product lambda expression, like I did in the Scala program so that the cell product size is a number.
+<p><strong>Java 8 BiFunction</strong></p>
 <pre>
-public static int rowProduct(final int[][] matrix, BiFunction<Integer, Integer, Integer> calcProduct) {
-	return IntStream.range(0, matrix[0].length - 1)
-		.map(col -> getRowProd(col, matrix,calcProduct))
-		.max()
-		.getAsInt();
-}
-
-private static int getRowProd(int col, final int[][] matrix, BiFunction<Integer, Integer, Integer> calcProduct) {
-	return IntStream.range(0, matrix.length - 4)
-		.map( row -> calcProduct.apply(row, col) )
-		.max()
-		.getAsInt();
-}
+final BiFunction<Integer, Integer, Integer> columnProduct = (row, col) -> {
+	return   matrix[row][col] 
+		   * matrix[row][col + 1] 
+		   * matrix[row][col + 2] 
+		   * matrix[row][col + 3];
+};
 </pre>
-
+<p>
+Unfortunately Java 8 does not support a <strong>TriFunction</strong> type that I need to pass a third parameter into the lambda expression so I left the lambda expressions as is. 
+</p>
 <h3>Scala Version</h3>
-The Scala version is the shortest and the easiest to understand. When I look at it, it makes me wonder when Java is going to get for-comprehensions.
+For my Scala version, I decided to convert the Java Stream code to for-comprehensions that resulted in code that is shorter and, I think, easier to read. There is just one function to calculate the product that selects the appropriate cells in the matrix and applies a lambda expression to calculate the product. When I look at it, it makes me wonder when Java is going to get for-comprehensions.
+<h3>Matrix Product</h3>
 <pre>
- def columnProduct(matrix: Array[Array[Int]], upperRange: Int, calcProduct: (Int, Int) => Int) = {
-   (for (row <- 0 to upperRange;
-         col <- 0 to matrix(0).length - 4)
-     yield calcProduct.apply(row, col))
-     .max
- }
-
- def rowProduct(matrix: Array[Array[Int]], calcProduct: (Int, Int) => Int) = {
-   (for (col <- matrix(0).indices;
-         row <- 0 to matrix(0).length - 4)
-     yield calcProduct.apply(row, col))
+ def matrixProduct(matrix: Array[Array[Int]], calcProduct: (Int, Int, Int) => Long, rowBuffer:Int, columnBuffer:Int) = {
+   (for (row <- 0 to matrix.length - rowBuffer - 1;
+         col <- 0 to matrix(0).length - columnBuffer - 1)
+     yield calcProduct.apply(row, col, max(rowBuffer, columnBuffer)))
      .max
  }
 </pre>
-
 <h3>Conclusion</h3>
 <p>
-If you compare the imperative version to the Java 7 functional version, the functional version is slightly longer. The real problem with the functional version is the recursion that can lead to a stack overflow given a large input data set. If a function fails after 10,000 iterations, is it really correct? What magic number number will lead to a failure? Who knows, so recursion without a compiler that can optimize tail recursion is not suitable for enterprise level software.
+If you compare the imperative version to the Java 7 functional version, the functional version is slightly shorter but that is due to applying the DRY refactoring. The real problem with the functional version is the recursion that can lead to a stack overflow given a large input data set. If a function fails after 10,000 iterations, is it really correct? What magic number number will lead to a failure? Who knows, so recursion without a compiler that can optimize tail recursion is not suitable for enterprise level software.
 </p>
 <p>
-The SAM Interface looks like a useable pattern for pre-Java 8 code because it just uses object instantiation. Java 8's dynamic function invocation without a stack frame is better but at least the SAM object can be collected by the garbage collector.  The one caveat is that a SAM combined with a recursive function will consume heap memory possible causing an out-of-heap-space error message and program failure.
+The SAM Interface looks like a useable pattern for pre-Java 8 code because it just uses object instantiation. Java 8's dynamic function invocation that does not create a stack frame is better but at least the SAM object can be freed by the garbage collector. The one caveat is that a SAM combined with a recursive function will consume heap memory possibly causing an out-of-heap-space error message and program failure.
 </p>
 <p>
-The bottom line is that with pre-Java 8 versions your options to eliminate mutation are extremely limited.
+The bottom line is that with pre-Java 8 versions your options to eliminate mutations are extremely limited.
 </p>
 </body>
 </html>
