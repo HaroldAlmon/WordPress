@@ -8,7 +8,7 @@
 <body>
 <h3>Stuck on Java 7?</h3>
 <p>
-Java 8 finally brings some function idioms to the language. Given that many applications are still using Java version 5, 6, and 7, is there any way to use functional idioms in these versions that do not have direct support for functional programming?
+Java 8 finally brings some functional code idioms to the language. Given that many applications are still using Java version 5, 6, and 7, is there any way to use functional idioms in these versions that do not have direct support for functional programming?
 </p>
 <p>
 After solving a ProjectEuler problem with Scala and imperative Java>,
@@ -21,6 +21,7 @@ After solving a ProjectEuler problem with Scala and imperative Java>,
 <li><a href="https://github.com/HaroldAlmon/ProjectEulerJavaFunc/blob/master/src/main/java/com/translationdata/p010/P011_LargestProduct.java" target="_blank">Java 8 Functional</a></li>
 <li><a href="https://github.com/HaroldAlmon/ProjectEulerScala/blob/master/src/main/scala/com/translationdata/P010/P011_LargestProduct.scala" target="_blank">Scala</a></li>
 </ol>
+<p><a href="http://www.translationdata.com/wp-content/uploads/2016/02/IMG_4168-e1456088441727.jpg" target="_blank"><img class="wp-image-2996  alignleft" src="http://www.translationdata.com/wp-content/uploads/2016/02/IMG_4168-e1456088441727.jpg" alt="IMG_4168" width="291" height="388" /></a>
 <p>
 The functional Java 7 solution uses tail recursion and Single Abstract Method (SAM) Interfaces to eliminate mutations and simulate lambda expressions. The solution is not optimal because the tail recursion is not eliminated by the Java 7 compiler and the SAM objects are actually anonymous classes that generate an object for every invocation. The solution works for small data sets but would cause a stack overflow with a large input data set. Nevertheless, creating the solution demonstrates that the functional idiom can be applied to older Java versions if you accept the constraints of the implementation.  
 </p>
