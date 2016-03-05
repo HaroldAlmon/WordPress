@@ -10,7 +10,7 @@
 <p>
 Java 8 finally brings some functional code idioms to the language. Given that many applications are still using Java version 5, 6, and 7, is there any way to use functional idioms in these versions that do not have direct support for functional programming?
 </p>
-<p>Java 7 supports the external foreach statement but since foreach is not avaiable in Java 5 and 6, I am not discussing it in this article.</p>
+<p>Java 7 supports the external foreach statement but since foreach is not available in Java 5 and 6, I am not discussing it in this article.</p>
 <p>
 After solving a ProjectEuler problem with Scala and imperative Java, I went back to my Java 8 solution and created a functional solution using the Java 8 Stream API and a second functional version using just Java 7 features.</a>.
 </p>
