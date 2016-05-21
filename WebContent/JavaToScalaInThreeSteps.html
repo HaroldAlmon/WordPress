@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+<p>In order to gain functional programming skills, you need to write applications that use the idiom. In my case, since I use Java at work and have no opportunity to use functional programming because we are using Java 6, I decided to start writing my solutions to ProjectEuler problems in Scala. Since I code in Java version 8 without using the functional features that were introduced, I needed a plan to get from Java coded in the imperative idiom to Scala coded in the functional idiom. What follows are the three steps I took to learn the fundamentals of Scala.</p>
+
+<ol>
+<li>Convert Java to Scala</li><li>Write Scala Using Imperative Code</li>
+<li>Write Scala Using Functional Code</li>
+</ol>
+
+<h3>Step One - Convert Java to Scala</h3>
+
+<p>Scala does not force the use of functional programming but the language allows functional programming constructs if you want to use them. My first two Scala programs were just conversions of Java code to Scala code that did not use functional programming. In order to get these two programs running, I installed and learned the basics of the IntellJ IDE, and then successfully ran my first Scala code that validated my Scala installation was correct. A few months later, I decided to continue Scala development with Eclipse since I did not feel comfortable with the IntelliJ IDE because I use Eclipse at work.</p>
+
+<p>The Eclipse development went on for a couple of weeks until I realized that the debugger and the IDE in general did not work as well with Scala as it did with Java. Also, the Darcula theme in IntelliJ functions better than the Dark appearance theme in Eclipse which has issue with the treeview pane on the left; however, the Obsidian colour theme for Eclipse looks absolutely fantastic. Running Eclipse with a light treeview and the Obsidian coloured edit panel still looks very good. On the minus side, JUnit tests are more difficult to run after I upgraded to IntelliJ version 15. At the moment, Eclipse holds the testing edge.</p>
+
+[caption id="attachment_1969" align="aligncenter" width="1093"]<a href="http://www.translationdata.com/wp-content/uploads/2015/12/Ecliipse-with-Obsidian-colour-theme.jpg"><img class="wp-image-1969 size-full" src="http://www.translationdata.com/wp-content/uploads/2015/12/Ecliipse-with-Obsidian-colour-theme.jpg" alt="Eclipse with Obsidian colour theme" width="1093" height="657" /></a> Eclipse with Obsidian Colour Theme (Click to enlarge)[/caption]
+
+<p>IntelliJ is a commercial product but JetBrains also offers a free community version that supports Scala. I still do not know if I am going to continue with IntelliJ because the environment feels very alien.  I switched from the Darcula to the Windows default theme and changed the keyboard mappings to match Eclipse. This makes using IntelliJ a lot easier.</p>
+
+[caption id="attachment_2218" align="aligncenter" width="1149"]<a href="http://www.translationdata.com/wp-content/uploads/2015/12/IntelliJ-Darcula.png"><img class="wp-image-2218 " src="http://www.translationdata.com/wp-content/uploads/2015/12/IntelliJ-Darcula.png" alt="IntelliJ Darcula Theme" width="1149" height="667" /></a> IntelliJ Darcula Theme (Click to enlarge)[/caption]
+
+<p>Notice that the that tail recursion on the <em>isLychrelImpl()</em> function below is indicated with a tiny counter clockwise curved arrow just to the left of the function name. This is great feature because the IntelliJ IDE shows you whether the function is recursive or tail recursive.</p>
+
+<h3>The Scala Development Environment Setup</h3>
+
+<p>In the transition to Scala I ran into a lot of other setup issues.</p>
+
+<ul><li>Installing Scala on another Laptop</li>
+<li>Installing the Scala IDE plugin on two laptops</li><li>Creating a new project in Eclipse</li><li>Adding the new project to Git</li>
+<li>Creating a new repository on GitHub</li>
+<li>Uploading the new project to GitHub</li>
+<li>Downloading the new project to a second laptop</li>
+<li>Migrate my Scala projects to IntelliJ</li>
+</ul>
+
+<p>That's on top of learning the Scala syntax and dealing with compilation errors that were somewhat obscure. That's good though, learning to solve problems is how you become proficient in the language. Fortunately, both Git and GitHub were pretty good about providing instructions as I created and cloned the new repository. Overall, the setup of Scala was a lot more work than actually coding the solution to the problem.</p>
+
+<h3>Step Two - Write Scala Using Imperative Code</h3>
+
+<p>I solved ProjectEuler <a href="https://github.com/HaroldAlmon/ProjectEulerScala/blob/master/src/main/scala/com/translationdata/p040/P040_ChampernownesConstant.scala">Problem 40</a> - ChampernownesConstant as my third program but first Scala program written from scratch.</p>
+
+<blockquote>An irrational decimal fraction is created by concatenating the positive integers: 0.123456789101112131415161718192021... It can be seen that the 12th digit of the fractional part is 1. If d<sub>n</sub> represents the nth digit of the fractional part, find the value of the following expression. <span style="white-space: nowrap;">d1 × d10 × d100 × d1000 × d10000 × d100000 × d1000000</span></blockquote>
+
+<p>At first, I thought I would just do a brute force solution and create a string that held the constant. I then realized that the string would be too large and decided that I might get a solution by just keeping the last part of the constant's sequence of digits in memory. I could then check to see of the target digit was in the sequence. This proved to be the correct approach as the very first solution I obtained proved to be correct.</p>
+
+<p>Debugging was was fairly easy since I knew that D1 and D10 were both one. I simply added a double loop and adjusted the iterations until I could get the D1000000 digit. Once I had that value, I added a third top level loop to pass in the nth-digit value. Is this solution a great example of functional programming? Not a chance. The whole program is imperative programming but it accomplished what I needed to do and set up a new Scala development environment on two laptops.</p>
+
+<h3>Step Three - Write Scala Using Functional Code</h3>
+
+<p><img class="alignleft wp-image-450 " src="http://www.translationdata.com/wp-content/uploads/2015/07/scala-smooth-spiral-102x150.png" alt="Why Learn Scala" width="77" height="113" />In another program, I attempted to use as many functional idioms as I could. This meant ditching the for-loops and variables from the imperative programming style. I initially figured out the for-comprehension but eventually changed these to sequences that called the <em>foreach()</em> function. <a href="https://projecteuler.net/problem=44" target="_blank">Problem 44</a> - PentagonalNumbers was straightforward algorithm but getting the functional details worked out took most of the time.</p>
+
+<h3><strong>Problem 44 - PentagonalNumbers</strong></h3>
+
+<blockquote>Pentagonal numbers are generated by the formula, Pn=n(3n−1)/2. The first ten pentagonal numbers are: 1, 5, 12, 22, 35, 51, 70, 92, 117, 145, ... It can be seen that P4 + P7 = 22 + 70 = 92 = P8. However, their difference, <span style="white-space: nowrap;">70 − 22 = 48,</span> is not pentagonal. Find the pair of pentagonal numbers, Pj and Pk, for which their sum and difference are pentagonal and <span style="white-space: nowrap;">D = |Pk − Pj|</span> is minimised; what is the value of D?</blockquote><p>My initial code only found one number and I thought the solution was incorrect since the problem implied that there were multiple pairs. I submitted the solution and to my astonishment, it was correct. Now I had the solution and just needed to make the code as functional as possible. After numerous iterations of the source code to implement the functional idiom, I finally had a Scala program that used functional programming. What is more important is the understanding of the idiom that I gained while writing the code.</p>
+
+<p>I wanted to experiment with variable names that closely matched the variables in the original problem so I violated the programming convention that variables should start with a lowercase letter; however, the resulting code is easier map back to the original problem. Step three is actually longer than just writing one short piece of coding. I need to write at least a dozen more like this before I really feel comfortable with the fundamentals of functional programming.</p>
+
+<p>On top of that, there are the Akka, Play2, and Scala testing frameworks that are a topic for another article. I was sort of surprised after I had the <a href="https://github.com/HaroldAlmon/ProjectEulerScala/blob/master/src/main/scala/com/translationdata/p040/P044_PentagonalNumbers.scala" target="_blank">final version</a> that there were no mutable variables. Think about that. If written in Java, the code would have two nested for-loops with counters at the very minimum. The Scala program does not even have a for-comprehensions to replace the for-loops. I knew you code avoid mutations with functional programming but having it occur this easily was a nice surprise. Welcome to the Scala twilight zone where the more things change, the more they stay the same.</p>
+
+<h3>Giving Tail Recursion a Go</h3>
+
+<p>I continued on with <a href="https://projecteuler.net/problem=50" target="_blank">Problem 50</a>  and was not sure how to implement a solution with functional programming.</p>
+
+<blockquote>The prime 41, can be written as the sum of six consecutive primes: 41 = 2 + 3 + 5 + 7 + 11 + 13 This is the longest sum of consecutive primes that adds to a prime below one-hundred. The longest sum of consecutive primes below one-thousand that adds to a prime, contains 21 terms, and is equal to 953. Which prime, below one-million, can be written as the sum of the most consecutive primes?</blockquote>
+
+<p>I decided to write an imperative prototype and convert that program to the functional idiom. That was the theory here is the actual result. Conversion was impossible. What I actually did was learn what I needed to accomplish in the first imperative solution and then write new functional code to implement the second solution. I knew the second solution was correct when the output matched the result from the first solution.</p>
+
+<p>The second solution implemented recursion so I tried to make the call tail recursive hoping that the compiler would eliminate the tail recursion and prevent my code from overflowing the stack. I waited a few days, looking for flaws in my algorithm but none were apparent. I submitted my solution and it was correct.</p>
+
+<h3>Post Implementation Analysis</h3>
+
+<p>I ran Lee Benfield's <a href="http://www.benf.org/other/cfr/" target="_blank">Java decompiler (CFR)</a> on my compiled Scala class file to see if the function I wrote was indeed tail recursive. I tried the javap decompiler but CFR does a better job of showing the source code that generated the byte code.</p>
+
+<p>The CFR decompiled code did show a do-while loop that indicated tail recursion was implemented. The next step was to investigate the possible elimination of the <a href="https://github.com/HaroldAlmon/ProjectEulerScala/blob/82370ae9d98e17d6219e989963456dfee2bedec7/src/main/scala/com/translationdata/p050/P050_ConsecutivePrimeSum.scala" target="_blank">tuple on line 52</a> that I used to implement the single tail recursive call. If I delete the tuple and made three direct recursive calls, would tail recursion still exist? I deleted the tuple, implemented the three direct call and checked the output of the decompiler that you can see below.</p>
+
+<pre>public Tuple2<Object, Object> primeSumImpl(int primeCandidate,
+  int currentPrimeSum, int maxPrimeSum, int primeCount, int maxPrimeCount) {
+  int primeCandidateSum;
+  while((primeCandidateSum = primeCandidate + currentPrimeSum) < this.upperLimit()) {
+    if (!this.sieve().isPrime(primeCandidate)) {
+      ++primeCandidate;
+      continue;
+    }
+    if (this.sieve().isPrime(primeCandidateSum)) {
+      maxPrimeCount = primeCount + 1;
+      ++primeCount;
+      maxPrimeSum = primeCandidateSum;
+      currentPrimeSum = primeCandidateSum;
+      ++primeCandidate;
+      continue;
+    }
+    ++primeCount;
+    currentPrimeSum = primeCandidateSum;
+    ++primeCandidate;
+  }
+  return new Tuple2.mcII.sp(maxPrimeCount, maxPrimeSum);
+}
+</pre>
+<p>The Java code above is the result of the Scala source code below. As you can see, even though the source code makes three recursive calls, the compiler still manages to eliminate the tail recursion by implementing a <strong>while-loop</strong>. This is important for data scientists who might be processing huge amounts of data that word cause a stack overflow unless the tail recursion is eliminated.</p>
+
+<pre>def primeSumImpl( primeCandidate:Int, currentPrimeSum:Int, maxPrimeSum:Int, primeCount:Int, maxPrimeCount:Int ): ( Int,Int ) = {
+  val primeCandidateSum = primeCandidate + currentPrimeSum
+  
+  if ( primeCandidateSum >= upperLimit )
+    return ( maxPrimeCount, maxPrimeSum )
+    
+  if ( sieve.isPrime(primeCandidate) == false )
+    primeSumImpl( primeCandidate + 1, currentPrimeSum, maxPrimeSum, primeCount, maxPrimeCount )
+  else {
+    if( sieve.isPrime( primeCandidateSum ) ) {
+      primeSumImpl( primeCandidate + 1, primeCandidateSum, primeCandidateSum, primeCount + 1, primeCount + 1 )
+    }
+    else
+      primeSumImpl( primeCandidate + 1, primeCandidateSum, maxPrimeSum, primeCount + 1, maxPrimeCount )
+  }
+}
+</pre>
+
+<p>The reason tail recursion happens is that each of the three recursive calls is the last statement executed in an if-statement that is itself at the end of the function. The decompiled byte code shows that the compiler changed the if-statement to three blocks and used <strong>continue-statements</strong> to jump back to the top of the function. In theory, there could be one hundred recursive calls in nested if-statements and as long as each recursive call was the last statement executed, tail recursion would be eliminated by the compiler.</p>
+
+<p>Another interesting aspect of the code was the ease in understanding the functional code when compared to imperative code. In my case, the functional code is easier for me to understand because I tell the compiler what to do not how to do it. I studied functions a lot in school so the layout of a functional program seems to flow more naturally than an imperative program.</p>
+
+<p>[Published in compliance with the <a href="http://creativecommons.org/licenses/by-nc-sa/2.0/uk/legalcode" target="_blank">Creative Commons license</a> and the <a href="http://opensource.org/licenses/MIT" target="_blank">MIT license</a>]</p>
+</body>
+</html>
