@@ -16,13 +16,11 @@ After solving a ProjectEuler problem with Scala and imperative Java, I went back
 </p>
 <strong>Here are the versions I coded:</strong>
 <ol>
-<li><a href="https://github.com/HaroldAlmon/ProjectEuler/blob/master/src/main/java/com/translationdata/p010/P011_LargestProduct.java" target="_blank">Java 7 imperative</a></li>
+<li><a href="https://github.com/HaroldAlmon/ProjectEuler/blob/9fc2354f29d5f611cc01923baa314226acf6f7ce/src/main/java/com/translationdata/p010/P011_LargestProduct.java" target="_blank">Java 7 imperative</a></li>
 <li><a href="https://github.com/HaroldAlmon/ProjectEulerJavaFunc/blob/master/src/main/java/com/translationdata/p010/P011_LargestProduct_SAM.java" target="_blank">Java 7 Simulate Functional Idiom</a></li>
 <li><a href="https://github.com/HaroldAlmon/ProjectEulerJavaFunc/blob/master/src/main/java/com/translationdata/p010/P011_LargestProduct.java" target="_blank">Java 8 Functional</a></li>
 <li><a href="https://github.com/HaroldAlmon/ProjectEulerScala/blob/master/src/main/scala/com/translationdata/P010/P011_LargestProduct.scala" target="_blank">Scala</a></li>
 </ol>
-<p><a href="http://www.translationdata.com/wp-content/uploads/2016/02/IMG_4168-e1456088441727.jpg" target="_blank"><img class="wp-image-2996  alignleft" src="http://www.translationdata.com/wp-content/uploads/2016/02/IMG_4168-e1456088441727.jpg" alt="IMG_4168" width="291" height="388" /></a>
-<p>
 The functional Java 7 solution uses tail recursion and Single Abstract Method (SAM) Interfaces to eliminate mutations and simulate lambda expressions. The solution is not optimal because the tail recursion is not eliminated by the Java 7 compiler and the SAM objects are actually anonymous classes that generate an object for every invocation. The solution works for small data sets but would cause a stack overflow with a large input data set. Nevertheless, creating the solution demonstrates that the functional idiom can be applied to older Java versions if you accept the constraints of the implementation.  
 </p>
 <p>
@@ -34,7 +32,13 @@ Method 1 - Use a SAM Interface to Simulate a Lambda Expression
 <p>The first step in converting from imperative to pseudo functional programming was to convert the embedded matrix calculation to SAMs like the following.
 </p>
 <pre>
-MatrixProduct columnProduct = new MatrixProduct() {
+private static int[][] matrix = { <put matrix data here> }
+
+interface MatrixProduct {
+	public int apply(int[][] matrix, int row, int col);
+}
+
+MatrixProduct matrixProduct = new MatrixProduct() {
 	@Override
 	public int apply(int[][] matrix, int row, int col) {
 		return    matrix[row][col] 
@@ -43,6 +47,8 @@ MatrixProduct columnProduct = new MatrixProduct() {
 				* matrix[row][col + 3];
 	}
 };
+
+final int product = matrixProduct.apply(matrix, row, col);
 </pre>
 <p>
 That code above replaces the following logic embedded in the original code.
