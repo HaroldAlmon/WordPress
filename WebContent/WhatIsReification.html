@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+<p>Reification is a term that crops up in computer science and is not something I even heard when studying computer science. The term sounds strange but knowing some latin can help decode the the meaning of the word. If you understand what deification is then reification is just a step away.</p>
+
+<h3>Latin to the Rescue</h3>
+<p><em>Deus</em> is the latin name for a god and <em>dei</em> is the genitive form of the noun. <em>Dei</em> is the form that applies to things that are owned or related to god. For instance <em>verba dei</em> means the words of god. In English <em>dei</em> is incorporated into the word deification that means tuning an object into a god. An example is the fact that the ancient Egyptians regarded cats as gods. That's deification.</p>
+
+<p>In latin <em>res</em> is the word for thing. <em>Rei</em> is the genitive form of <em>res</em>. <em>Rei</em> is incorporated into the English word reification that means turning a concept into a thing. How does this apply to computer science?</p>
+
+<p>Let's start with computer memory that stores binary digits. At some point, when memory became larger than a few bits, someone decided that it would be easier to group the bits into groups called bytes. These bytes actually existed in the CPU registers and could be written to memory in parallel.</p>
+
+<p>When computer languages were invented, and the designers started creating integers, longs, float point numbers, and other datatypes. These datatypes do not exists in memory because the datatypes are just conceptual groupings of bytes or words that written and read into computer memory. The language compiler is reifying the underlying bytes or words into concepts that aid the programmers in dealing with memory.</p>
+
+<p>If you look at a memory dump all you see are bytes of data. Can you show me the floats, integers, or longs? Of course not because they do not exist. This was really apparent in the C language because datatypes varied from one computer to the next, 2 bytes on one and 4 bytes on another. If I gave you a sequence of hex characters, even if you knew you were looking at an integer, you would need to know the platform in order to determine the integer's length.</p>
+
+<h3>Reification is the Opposite of Type Erasure</h3>
+
+<p>Someone once defined reification as the opposite of type erasure. That's an interesting observation but not easy to understand if you don't know type erasure and even if you do, the statement requires clarification. Reification is the act of turning an abstraction into a concrete physical thing.</p>
+
+<p>Some people treat countries as real objects when in fact they are defined by imaginary lines on the ground. Ever see a picture of the earth from outer space. Can you see any of the countries? You get the point. But there are border guards in some countries you say. The guards are real physical objects but blindfold the guard, move them away from the border, take off the blindfold and ask "What country are you in?" He will not know because countries are just abstractions.</p>
+
+</p>One of the dictionary definitions of reification points out that reification is a fallacy because concepts are not real objects. Mathematics, friendship, sorrow, happiness are not real things, they are just concepts. They are related to real things but they are abstractions.</p>
+
+<h3>Type Erasure Versus Reification</h3>
+<p>If you were able to pull an object out of a Java list and know the objects type at runtime then you would be reifying the data. So in Java if you put a Building object in a list you can extract the object into a Building object but it's the compiler that does the type checking, not the runtime. Java forgets the datatype that goes into a collection and that causes all kinds of issues but it was done to maintain backward compatibility with previous versions of Java.</p>
+
+<p>Even objects are a form of reification. Any object you create does not exist as an identifiable structure in memory. Memory is just a sequence of binary digits and it's the compiler that aggregates the components of the object so that you can manipulate the data in a more logical fashion. When you send data across the internet it travels as a stream and is assembled into various objects. That's another example of reification.</p>
+
+<h3>A Scala Example</h3>
+
+<p>The following code is not in context to demonstrate that tuples hide the datatypes.</p>
+
+<pre>val maxSum = primeNumberSums( maxPos )._2
+maxSum
+</pre>
+
+<p>So what does maxSum contain? What was extracted from primeNumberSums? With the tuple field extraction operator you have no idea what is in the second position of the tuple. Now, let's use the Scala match statement to reify the tuple and identify the second field.</p>
+
+<pre> 
+val maxSum = primeNumberSums( maxPos ) match {
+  case (termCount, primeSum) => primeSum
+}
+maxSum
+</pre>
+
+<p>Now you know that the second field is the primeSum. In fact, all the fields are effectively identified. The program that contains this code is located in Project Euler <a href="https://github.com/HaroldAlmon/ProjectEulerScala/blob/master/src/main/scala/com/translationdata/p050/P050_ConsecutivePrimeSum.scala" target="_blank">P050_ConsecutivePrimeSum</a>.</p>
+
+<p>If you are a data scientist you might be using reification and not even realize it. If you take raw data, possibly convert the data type, and assign a name to that type, then you are doing reification.</p>
+
+<h3>Related Concepts, Beautification and Personification</h3>
+
+<p>Other words that follow the same pattern are beautification and personification. In both cases, the words mean taking something and turning the something into something different. For instant when you assign the characteristics of a person to an animal or inanimate object, that's personification.</p>
+
+<p>In computer science turning something into, say, an object is a little different because the something may actually be an object. Reification just places the object into a container that is an object that makes referencing the object much easier.</p></body>
+</html>
