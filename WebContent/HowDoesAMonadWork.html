@@ -6,7 +6,9 @@
 <link rel="stylesheet" type="text/css" href="WordPress.css">
 </head>
 <body>
-<<p>When I was in university, the professor when through the formal definition of a mathematical limit. The definition was abstract and solving problems with limits did not require understanding the definition of a limit so I made it through the class without really grasping the definition.</p>
+<p>When I was in university, the professor when through the formal definition of a mathematical limit. 
+The definition was abstract and solving problems with limits did not require understanding the definition 
+of a limit so I made it through the class without really grasping the definition.</p>
 
 After I graduated, I spent hours going over the definition and finally understood the definition by showing that:
 $latex if\ f(x)=x &s=4\ then\ lim_{x\to 5}\ f(x) \neq 6$
@@ -14,14 +16,17 @@ $latex if\ f(x)=x &s=4\ then\ lim_{x\to 5}\ f(x) \neq 6$
 &nbsp;
 &nbsp;
 
-<p>Obviously the correct solution is 5 but proving the result was not 6 forced me to understand the definition of a limit. I am using a similar strategy here except that I want you to understand that <strong>a monad with just <em>map</em> will not work and that a monad with just <em>flatMap</em> will not work. Understand that and you understand most of what you need to know about monads.</strong></p>
+<p>Obviously the correct solution is 5 but proving the result was not 6 forced me to understand the definition of a limit. I am using a similar strategy here except that I want you to understand that a monad with just <em>map</em> will not work and that a monad with just <em>flatMap</em> will not work. Understand that and you understand most of what you need to know about monads.</p>
 
-<p>A monad provides the capability of executing a lambda expression and then capturing the result of the computation in a monad.  The capture of the result allows the chaining of lambda expressions that are applied to the data contained in the monad. <strong></p>
+<p>A monad provides the capability of executing a lambda expression and then capturing the result of the computation in a monad.  The capture of the result allows the chaining of lambda expressions 
+that are applied to the data contained in the monad.</p>
 
-<p>A monad works by offering two very important functions, <em>map</em> and <em>flatMap</em>.</strong> The purpose of <em>map</em> is to apply a lambda expression and then place the result of the evaluation into a new monad. The purpose of <em>flatMap</em> is to apply a lambda expression and return the result of the evaluation. <strong><em>flatMap</em> DOES NOT place the evaluation result in a monad because the lambda expression returns a value that is already in a monad.</strong></p>
+<p>A monad works by offering two very important functions, <em>map</em> and <em>flatMap</em>.
+The purpose of <em>map</em> is to apply a lambda expression and then place the result of the evaluation into a new monad. The purpose of <em>flatMap</em> is to apply a lambda expression and return the result of the evaluation. <em>flatMap</em> DOES NOT place the evaluation result in a monad because the lambda expression returns a value that is already in a monad.</p>
+
 <p>Keeping the result in a monad is the key to how a monad can be chained with other lambda expressions. The <em>flatMap</em> allows function composition. This is useful for languages like Haskell and Scala that have for-comprehensions. A for-comprehension is mapped by the compiler to composite lambda expressions. See <a href="https://www.youtube.com/watch?v=Mw_Jnn_Y5iA" target="_blank">Declutter Your Code With Monadic Design</a> for a demonstration of how this works. Let's have a look at a simple monad class written in Scala and see how it works.</p>
 
-<p>The following Scala code demonstrates how a monad works but also shows why two functions, <em>map</em> and <em>flatMap</em> are necessary to implement a monad. You could just have <em>flatMap</em>em> but then the Monad could not support a for-comprehension. for-comprehensions look somewhat like a traditional for-loops but the construct is logically equivalent to a lambda expression.</p>
+<p>The following Scala code demonstrates how a monad works but also shows why two functions, <em>map</em> and <em>flatMap</em> are necessary to implement a monad. You could just have <em>flatMap</em> but then the Monad could not support a for-comprehension. for-comprehensions look somewhat like a traditional for-loops but the construct is logically equivalent to a lambda expression.</p>
 
 <h3>The SingleArgumentMonad Class</h3>
 
@@ -55,7 +60,9 @@ class SingleArgumentMonad[A](val value: A) {
 Result = 9
 </pre>
 <h3>for-comprehensions are Logically Equivalent to Lambda Expressions</h3>
-<p>I am now going to convert the for-comprehension above into composite lambda expressions to demonstrate that the for-comprehension is logically equivalent to lambda expressions with <em>map</em> and <em>flatMap</em> calls. <strong>
+<p>I am now going to convert the for-comprehension above into composite lambda expressions 
+to demonstrate that the for-comprehension is logically equivalent to lambda expressions 
+with <em>map</em> and <em>flatMap</em> calls. <strong>
 <br>
 <p>Step 1. Convert first part of the <em>for</em> to flatMap</strong></p>
 
@@ -76,10 +83,23 @@ Result = 9
 </pre>
 <p><strong>Now run the program. The result is 9.</strong> Based on what I see in the debugger this is how the code works. It is easier to understand the execution by working from right to left but the debugger shows the runtime working from left to right as detailed below.</p>
 <ol>
-	<li>Execute the monadWith4.flatMap function. This steps takes the 4 and substitutes the 4 into <em>monadWith5.map { y =&gt; x + y }</em> which yields <em>monadWith5.map { y =&gt; 4 + y }</em>.</li>
-	<li>Execute the <em>monadWith5.map</em> function. This step takes the 3 and substitutes the 5 into<em> y =&gt; 4 + y</em> which yields 5<em> =&gt; 4 + 9</em></li>
-	<li>Evaluate 4 + 5 which yields 9. So 9 is the result BUT the member function in the class wraps the 9 in a SingleArgumentMonad. So the flatMapAndMapResult variable ends up containing a monad that contains a 9.</li>
+	<li>Execute the monadWith4.flatMap function. This function takes the 4 and 
+	substitutes the 4 into <em>x => monadWith5.map { y => x + y }</em> which 
+	yields <em>monadWith5.map { y => 4 + y</em> }.</li>
+	<li>Execute the <em>monadWith5.map</em> function. This function takes the 5 
+	and substitutes the 5 into<em> y => 4 + y</em> which yields <em>4 + 5</em></li>
+	<li>Evaluate 4 + 5 which yields 9.</li>
 </ol>
+<p> So 9 is the result BUT the member function in the class wraps the 9 in a SingleArgumentMonad. So the flatMapAndMapResult variable ends up containing a monad that contains a 9.</p>
+
+<p>What would happen if we used two calls to <em>map()</em> like this?</p>
+<pre>val flatMapAndMapResult = 
+	monadWith4.map { x =>
+		monadWith5.map { y => x + y }
+	}
+</pre>
+<p>The <em>monadWith4.map</em> function would place the result of the monadWith5.map into an instance of a SingleArgumentMonad.  But the <em>monadWith5.map</em> function already returns an instance of SingleArgumentMonad. So we end with a SingleArgumentMonad nested inside another SingleArgumentMonad.  That's why the <em>flatMap()</em> function is necessary in order to evaluate the expression without wrapping the result in another monad.</p>
+
 
 <p>Monads are hard to understand, so try writing your own monad and step through the code.</p>
 </body>
