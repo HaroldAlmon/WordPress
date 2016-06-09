@@ -72,41 +72,11 @@ Notice how the call to the <em>apply()</em> function looks very similar to the S
 Doing this is somewhat like factoring out the business logic that I might want to convert to a lambda expression when the code is transitioned to a Java version that supports lambda expressions. Doing this seems like an academic exercise but it changes the way you approach calculations and prepares you for the transition to a functional programming language. 
 </p>
 <h3>
-Methods 2 - Use Recursion to Eliminate Mutations
+Method 2 - Java 7, Use Recursion to Eliminate Mutations
 </h3>
 <p>
 In order to eliminate the for-loops in the imperative version, I implemented tail recursion. The following is the Java code that replaced a nested for-loop to iterate over the columns and rows of the matrix.
 </p>
-<h3>Matrix Row Product Recursion with its Helper Function.</h3>
-
-<p><strong>Outer loop.</strong></p>
-<pre>
-public static int rowProduct(int[][] matrix, MatrixProduct matrixProduct) {
-	return rowProductImpl(0, 0, matrix, matrixProduct);
-}
-
-private static int rowProductImpl(int col, int product, int[][] matrix, MatrixProduct matrixProduct) {
-	if (col >=  matrix[0].length) 
-		return product;
-	return rowProductImpl( col + 1, max(product, getRowProd(col, matrix, matrixProduct)), matrix, matrixProduct);
-}
-</pre>
-
-<p><strong>Inner Loop</strong></p>
-<pre>
-private static int getRowProd(int col, int[][] matrix, MatrixProduct matrixProduct) {
-	return getRowProdImpl(col, 0, matrix,  0, matrixProduct);
-}
-
-private static int getRowProdImpl(int col, int row, int[][] matrix, int previousProduct, MatrixProduct matrixProduct) {
-	if (row > matrix.length - 4)
-		return previousProduct;
-	
-	final int product = matrixProduct.apply(matrix, row, col);
-	return getRowProdImpl(col, row + 1, matrix, max(previousProduct, product), matrixProduct);
-}
-</pre>
-
 
 <h3>Matrix Column Product Recursion with its Helper Function.</h3>
 
@@ -139,8 +109,7 @@ private static int getColProdImpl(int row,  int col, int[][] matrix,int previous
 </pre>
 
 <h3>Matrix Product Java 8 Version</h3>
-<p>Here is the Java 8 version of the same code. This code is much easier to understand due to the fluent coding style.</p>
-<p>I decided to apply the DRY (Don't Repeat Yourself) principle and reduced the four function calculations into two calculations.</p>
+<p>Here is the Java 8 version of the same code. This code is much easier to understand due to the fluent coding style. I also reduced the four function calculations into two calculations.</p>
 <p><strong>Outer loop.</strong></p>
 <pre>
 private int matrixCellProduct(final int[][] matrix, BiFunction<Integer, Integer, Integer> calcProduct, int rowBuffer, int columnBuffer) {
