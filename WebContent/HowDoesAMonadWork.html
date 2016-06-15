@@ -5,6 +5,7 @@
 <title>Insert title here</title>
 <link rel="stylesheet" type="text/css" href="WordPress.css">
 </head>
+<body>
 <p>When I was in university, the professor when through the formal definition of a mathematical limit. 
 The definition was abstract and solving problems with limits did not require understanding the definition 
 of a limit so I made it through the class without really grasping the definition.</p>
@@ -88,6 +89,7 @@ with <em>map</em> and <em>flatMap</em> calls. <strong>
 	and substitutes the 5 into<em> y => 4 + y</em> which yields <em>4 + 5</em></li>
 	<li>Evaluate 4 + 5 which yields 9.</li>
 </ol>
+
 <p> So 9 is the result BUT the member function <em>map</em> of the SingleArgumentMonad class:
 <pre>
 def map[B](f:A => B) = new SingleArgumentMonad(f(value))
@@ -95,14 +97,15 @@ def map[B](f:A => B) = new SingleArgumentMonad(f(value))
 wraps the result of applying the lambda expression <em>f</em> in a SingleArgumentMonad. So the flatMapAndMapResult variable ends up containing a monad that contains a 9.</p>
 
 <p>What would happen if we used two calls to <em>map</em> like this?</p>
+
 <pre>val flatMapAndMapResult = 
 	monadWith4.map { x =>
 		monadWith5.map { y => x + y }
 	}
 </pre>
+
 <p>The <em>monadWith4.map</em> function would place the result of the monadWith5.map into an instance of a SingleArgumentMonad.  But the <em>monadWith5.map</em> function already returns an instance of SingleArgumentMonad. So we end with a SingleArgumentMonad nested inside another SingleArgumentMonad.</p>
 <p>If you run the example code in eclipse and hover over the <em>flatMapAndMapResult</em> variable you can actually see the nested SingleArgumentMonad classes. That's why the <em>flatMap()</em> function is necessary in order to evaluate the expression without wrapping the result in another monad.</p>
-
 
 <p>Monads are hard to understand, so try writing your own monad and step through the code.</p>
 </html>
