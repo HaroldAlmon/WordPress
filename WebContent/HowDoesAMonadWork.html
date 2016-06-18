@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="ISO-8859-1">
-<title>Insert title here</title>
+<title>How Does a Monad Work</title>
 <link rel="stylesheet" type="text/css" href="WordPress.css">
 </head>
 <body>
@@ -23,16 +23,17 @@ that are applied to the data contained in the monad.</p>
 
 <p>A monad works by offering two very important functions, <em>map</em> and <em>flatMap</em>. The purpose of <em>map</em> is to apply a lambda expression and then place the result of the evaluation into a new monad. The purpose of <em>flatMap</em> is to apply a lambda expression and return the result of the evaluation. <em>flatMap</em> DOES NOT place the evaluation result in a monad because the lambda expression returns a value that is already in a monad.</p>
 
-<p>Keeping the result in a monad is the key to how a monad can be chained with other lambda expressions. The <em>flatMap</em> allows function composition. This is useful for languages like Haskell and Scala that have for-comprehensions. A for-comprehension is mapped by the compiler to composite lambda expressions. See <a href="https://www.youtube.com/watch?v=Mw_Jnn_Y5iA" target="_blank">Declutter Your Code With Monadic Design</a> for a demonstration of how this works. Let's have a look at a simple monad class written in Scala and see how it works.</p>
+<p>Keeping the result in a monad is the key to how a monad can be chained with other lambda expressions. The <em>flatMap</em> allows function composition. This is useful for languages like Haskell and Scala that have for-comprehensions. A for-comprehension is mapped by the compiler to composite lambda expressions. See <a href="https://www.youtube.com/watch?v=Mw_Jnn_Y5iA" target="_blank">Declutter Your Code With Monadic Design</a> for a demonstration of how this works. Skip the part about the Validation Monad if you want, I don't think it's needed and complicates the discussion</p>
+<p>Let's have a look at a simple monad class written in Scala and see how it works. This class applies a lambda function to a contained value and nothing else.</p>
 
 <p>The following Scala code demonstrates how a monad works but also shows why two functions, <em>map</em> and <em>flatMap</em> are necessary to implement a monad. You could just have <em>flatMap</em> but then the Monad could not support a for-comprehension. for-comprehensions look somewhat like a traditional for-loops but the construct is logically equivalent to a lambda expression.</p>
 
-<h3>The SingleArgumentMonad Class</h3>
+<h3>The ScalarMonad Class</h3>
 
 <pre>package com.translationdata.prototypes
-class SingleArgumentMonad[A](val value: A) {
-  def map[B](f:A => B) = new SingleArgumentMonad(f(value))
-  def flatMap[B](f:A => SingleArgumentMonad[B]) = f(value)
+class ScalarMonad[A](val value: A) {
+  def map[B](f:A => B) = new ScalarMonad(f(value))
+  def flatMap[B](f:A => ScalarMonad[B]) = f(value)
   override def toString = value.toString
 }
 </pre>
@@ -41,10 +42,10 @@ class SingleArgumentMonad[A](val value: A) {
 
 <p>This object is only here to test the monad.</p>
 
-<pre>object SingleArgumentMonad {
+<pre>object ScalarMonad {
   def main(args: Array[String]) {
-    val monadWith4 = new SingleArgumentMonad(4)
-    val monadWith5 = new SingleArgumentMonad(5)
+    val monadWith4 = new ScalarMonad(4)
+    val monadWith5 = new ScalarMonad(5)
 
     val forResult = for {
       x <- monadWith4 // The flatMap function reads the value instance variable from the monad
@@ -61,7 +62,7 @@ Result = 9
 <h3>for-comprehensions are Logically Equivalent to Lambda Expressions</h3>
 <p>I am now going to convert the for-comprehension above into composite lambda expressions 
 to demonstrate that the for-comprehension is logically equivalent to lambda expressions 
-with <em>map</em> and <em>flatMap</em> calls. <strong>
+with <em>map</em> and <em>flatMap</em> calls.<strong>
 <br>
 <p>Step 1. Convert first part of the <em>for</em> to flatMap</strong></p>
 
@@ -90,11 +91,11 @@ with <em>map</em> and <em>flatMap</em> calls. <strong>
 	<li>Evaluate 4 + 5 which yields 9.</li>
 </ol>
 
-<p> So 9 is the result BUT the member function <em>map</em> of the SingleArgumentMonad class:
+<p> So 9 is the result BUT the member function <em>map</em> of the ScalarMonad class:
 <pre>
-def map[B](f:A => B) = new SingleArgumentMonad(f(value))
+def map[B](f:A => B) = new ScalarMonad(f(value))
 </pre>
-wraps the result of applying the lambda expression <em>f</em> in a SingleArgumentMonad. So the flatMapAndMapResult variable ends up containing a monad that contains a 9.</p>
+wraps the result of applying the lambda expression <em>f</em> in a ScalarMonad. So the flatMapAndMapResult variable ends up containing a monad that contains a 9.</p>
 
 <p>What would happen if we used two calls to <em>map</em> like this?</p>
 
@@ -104,8 +105,8 @@ wraps the result of applying the lambda expression <em>f</em> in a SingleArgumen
 	}
 </pre>
 
-<p>The <em>monadWith4.map</em> function would place the result of the monadWith5.map into an instance of a SingleArgumentMonad.  But the <em>monadWith5.map</em> function already returns an instance of SingleArgumentMonad. So we end with a SingleArgumentMonad nested inside another SingleArgumentMonad.</p>
-<p>If you run the example code in eclipse and hover over the <em>flatMapAndMapResult</em> variable you can actually see the nested SingleArgumentMonad classes. That's why the <em>flatMap()</em> function is necessary in order to evaluate the expression without wrapping the result in another monad.</p>
+<p>The <em>monadWith4.map</em> function would place the result of the monadWith5.map into an instance of a ScalarMonad.  But the <em>monadWith5.map</em> function already returns an instance of ScalarMonad. So we end with a ScalarMonad nested inside another ScalarMonad.</p>
+<p>If you run the example code in eclipse and hover over the <em>flatMapAndMapResult</em> variable you can actually see the nested ScalarMonad classes. That's why the <em>flatMap()</em> function is necessary in order to evaluate the expression without wrapping the result in another monad.</p>
 
 <p>Monads are hard to understand, so try writing your own monad and step through the code.</p>
 </html>
