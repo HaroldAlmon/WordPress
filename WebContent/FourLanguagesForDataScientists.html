@@ -5,22 +5,28 @@
 <title>Insert title here</title>
 </head>
 <body>
-<p>Here is my roundup of languages for data scientists. Most will probably know R and one other high level language and at least one low level language like Java or Scala. I'm not sure how to classify Python because it's a general purpose language but it has a huge math library of packages that data scientists can use.</p>
-<p>I have used SQL, a domain specific functional language, for over twenty years, so keep in mind that influences my evaluation of functional languages and features.</p>
+<h3>Four Languages for Data Science</h3>
+<p>Here is my roundup of languages for data science. Most data scientists will probably know R and one other high level language and at least one low level language like Java or Scala. I'm not sure how to classify Python because it's a general purpose language but it has a huge math library of packages that data scientists can use.</p>
+<p>I have used SQL, a domain specific functional language, for over twenty years, so keep in mind that influences my evaluation of functional languages and features. I have used all of these languages except Python.</p>
 <h3>Scala</h3>
 <p>Scala has gained commercial success by offering a combination of object oriented and functional programming language in a statically typed language. This makes Scala somewhat of a standout. There are some issues with functions like foldRight that will fail with a large list due to the implementation that uses recursion that can overflow the stack.</p>
-<p><a href="http://www.kdnuggets.com/2014/08/four-main-languages-analytics-data-mining-data-science.html" target="_blank">KDnuggets</a> ranks Scala a lot lower than the other three languages but the Spark is written in Scala. Spark is superior for performing complex in memory calculations so expect Scala to gain in popularity because to use Spark you need to know Scala.</p>
+<p><a href="http://www.kdnuggets.com/2014/08/four-main-languages-analytics-data-mining-data-science.html" target="_blank">KDnuggets</a> ranks Scala a lot lower than the other three languages but the Spark is written in Scala. Spark is superior for performing complex in memory calculations so expect Scala to gain in popularity because Spark is written in Scala.</p>
+<p>Spark users can use Java, Python, R, or Scala to write their applications so if you learn any of these languages you can use Spark to do your big data analysis. Due to it's type safety and functional features, Scala would be my choice for Spark applications.</p>
 <p>Scala looks like a big complicated language, but if you know Java and SQL, a lot of the syntax and functional concepts transfer to Scala.</p>
 <h3>R</h3>
 <p>R is a higher level language that allows developers to concentrate more on the problem solution rather than getting the all of the variable. R is well established and although it can be quite slow, it's the Lingua Franca of analytics because of its popularity and the fact that it's open source. I have used R and like the interactive nature of the language. The data frames are like results from an SQL query so picking up the language has been straight forward.</p>
+<p>I was looking to improve my computer language skills by learning a dynamically typed language and started with Closure. I then switched to R because it is essentially the lingua franca of statistics. So I gave up a language that disallowed mutations but gained access to easy manipulation of data statistics.</p>
 <p>Here is an analysis of the survival rates of passengers on the Titanic. This was relatively easy using the R language. I pulled the data from kaggle.com.</p>
-[caption id="attachment_3568" align="alignnone" width="715"]<a href="http://www.translationdata.com/wp-content/uploads/2016/11/TitanicSurvivalRatesByAgeGenderClass.png"><img class="wp-image-3568" src="http://www.translationdata.com/wp-content/uploads/2016/11/TitanicSurvivalRatesByAgeGenderClass-300x194.png" alt="Titanic Survival Rates By Age Gender and Passenger Class" width="715" height="463" /></a> 
-<h4>Titanic Survival Rates By Age Gender and Passenger Class</h4>
-[/caption]
+[caption id="attachment_3568" align="alignnone" width="1031"]<a href="http://www.translationdata.com/wp-content/uploads/2016/11/TitanicSurvivalRatesByAgeGenderClass.png"><img class="wp-image-3568" src="http://www.translationdata.com/wp-content/uploads/2016/11/TitanicSurvivalRatesByAgeGenderClass-300x194.png" alt="Data Science Analysis with R" width="1031" height="667" /></a> Data Science Analysis with R[/caption]
 <h3>Java</h3>
-<p>Java is the surprise entry since it's a well established programming language that started long before big data became a major issue. The reason for its importance is that Hadoop is everywhere in the big data world and Hadoop is written in Java. Java and Scala both run on the JVM so those languages are stuck with the gift from hell, type erasure, but that's life.</p>
+<p>Java is here even though it started long before big data platforms became so widespread. The reason for its importance is that ubiquity of Hadoop in the big data world and Hadoop is written in Java. Java and Scala both run on the JVM so those languages are stuck with the gift from hell, type erasure, but that's life.</p>
+<p>Java 8 brings some support for functional programming to the language. Although the features are not as extensive or elegant as Scala, the ability to use real lambda expressions and other functional constructs makes the language more suitable for applications that use parallel processing.</p>
+<p>I also see companies in my area using and recruiting new employees that knows Java for big data data and data science applications.</p>
 <h3>Python</h3>
 <p>Python is hugely popular in the data science community and gaining on R.  To me, Python looks more like a programming language than R but just like R it us dynamically typed and interpreted. Python is also very popular as a teaching language in schools. Python like R is not  a language I would use to write critical life support systems that run in a hospital. The reason is that the dynamic typing can result in a lot more runtime errors that a statically typed language typically would generate.</p>
 <p>So why use Python? Python code is generally quicker to write and smaller in size than code written in compiled statically typed languages. A strategy used by some companies is to write a prototype in Python or R and then translate the code into a language like Java or Scala that is much safer and has better runtime performance.</p>
+<p>Python also has a large number of packages that support data analysis, statistics, and visualizations.</p>
+<h3>Conclusion</h3>
+<p>Learn any of these plus some Hadoop or Spark and you are equipped to enter the data science realm. Another language to watch, that I did not cover, is Julia which is gaining fast in popularity.</p>
 </body>
 </html>
