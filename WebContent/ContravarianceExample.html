@@ -5,10 +5,9 @@
 <title>What is contravariance?</title>
 </head>
 <body>
-<p>
-This article is a follow up to my <a href="http://www.translationdata.com/2016/01/what-is-covariance/" target="_blank">What is Covariance</a> article. If you read the previous article and understood the concept then contravariance should be relatively straight forward.</p>
+<p>This article is a follow up to my <a href="http://www.translationdata.com/2016/01/what-is-covariance/" target="_blank">What is Covariance</a> article. If you read the previous article and understood the concept then contravariance should be relatively straight forward.</p>
 
-<p>Here is sample program that demonstrates contravariance and covariance.</p>
+<h3>A Demonstration of Contravariance and Covariance</h3>
 <pre>
 package com.translationdata;
 
@@ -123,12 +122,11 @@ After append(): I am a mammal
 
 <p>Could you read the <em>dest</em> variable and place the result an Animal, Mammal, or Human variable?</p> 
 
-<p>No, because the <em>apply()</em> function can receive any supertype of <strong>T</strong> including Object. If <em>List&lt;Object&gt;</em> is passed to <em>append()</em>, you cannot read one of the Objects from the list and place it in an Animal type because that violates the rules of polymorphism.</p>
+<p>No, because the <em>apply()</em> function can receive any supertype of <strong>T</strong> including Object. If <en>List&lt;Object&gt;</em> is passed to <em>append()</em>, you cannot read one of the Objects from the list and place it in an Animal type because that violates the rules of polymorphism.</p>
 <p>If you try reading the contravariant type you will get a nasty compiler error similar to:</p>
 <pre>Type mismatch: cannot convert from capture#9-of ? super T to Animal</pre>
 <br>
 <p>An animal can do anything that an Object can do but not vice versa.</p>
-<table border="1" width="80%">
 <tr>
 <td>
 <pre>Object object = new Animal(); // is okay</pre>
@@ -138,14 +136,13 @@ After append(): I am a mammal
 
 </td>
 </tr>
-</table>
 
 <br>
 <p>You can however always read the <em>dest</em> variable into an Object variable. Since Object is the superclass of every class, this works. So the following will always work:</p>
 <pre>Object object = new AnyClass(); // will always compile</pre>
 
 <br>
-<p>Why Would You Need Contravariant Types?</p>
+<h3>Why Would You Need Contravariant Types?</h3>
 <p> These types are useful when writing generic classes that have functions that work on generic types. The Java Collections class is an example. If you look at the <em>copy()</em> function, you will see contravariant and covariant types in the signature. This allows the function to work with many types not just the single type T.</p>
 </body>
 </html>
