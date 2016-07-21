@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+<p>Given that functional programs avoid mutations and side effects, that means the programs change nothing and are useless. Simon Peyton Jones brought up this point in his <a href="https://www.youtube.com/watch?v=iSmkqocn0oQ" target="_blank">Haskell is Useless</a> video.</p>
+<p>Image your functional program takes input a chocolate cream pie, performs no mutations, and outputs the same chocolate cream pie with no changes. The cookie monster on the other end gets the pie, eats it, and declares functional programming is great! Those nasty imperative programs eat the whole pie but functional programs do nothing.</p>
+<p>If functional programming has no side effects, how can the program perform any useful work?</p>
+<h3>Scala with Mutations</h3>
+<p>I faced the problem of tracking two variables that change state in ProjectEuler Problem 40. <a href="https://github.com/HaroldAlmon/ProjectEulerScala/blob/36a5f7047b946e4b62808c865959c2b099fa08d8/src/main/scala/com/translationdata/p040/P040_ChampernownesConstant.scala" target="_blank">The initial solution</a> uses Scala vars that changed state.</p>
+<p>Here is part of the Scala code with mutating vars:</p>
+<pre>object P040_ChampernownesConstant {
+  def main(args: Array[String]) = champernownesConstant
+
+  private def champernownesConstant = {
+    var product = 1
+    var number = 1
+val targetDigits = Array( 1, 10, 100, 1000, 10000, 100000, 10000000 )
+</pre>
+<p>Notice the two vars. After studying how factorials are implemented with tail recursion, how to to eliminate the mutations became clear.</p>
+<h3>State Tokens</h3>
+<p><a href="https://github.com/HaroldAlmon/ProjectEulerScala/blob/master/src/main/scala/com/translationdata/p040/P040_ChampernownesConstant.scala" target="_blank">My mutation free solution</a> contains a tuple with two scalars and essentially forms a vector. Another alternative would be to create a case class to hold the state variables. Whenever the state needs to change, a new tuple or case class is generated to absorb the changes.</p>
+<p>I view the tuple or the case class as a state token. I am calling it a state token because the item is passed from one function to another and that is what a token represents. The state tokens are always modified by creating a new state token from the old so state tokens are never mutated. If you look at the function call, the old tuple plus the changes are passed to another function that constructs a new tuple with a new state.</p>
+<p>That's why functional programs perform useful work. Mutations occur, but the compiler tracks the mutation not the developer.</p>
+<p>Two basic techniques to avoid mutations when using a state token are:</p>
+<ol>
+	<li>Pass a State Token to Another Function</li>
+	<li>Return a State Token from a Function</li>
+</ol>
+<p>Here are examples of each.</p>
+<h3>Pass a State Token to Another Function</h3>
+<pre>  private def makeSequence(startNum:Int):String = {
+    val sequence = makeSequenceImpl("", startNum, startNum + SEQUENCESIZE)
+    sequence
+  }
+
+  @tailrec private def makeSequenceImpl(sequence:String,
+                                position:Int,
+                                seqLimit: Int): String = {
+    if ( position >= seqLimit )
+      return sequence
+    makeSequenceImpl(sequence + position.toString, position + 1, seqLimit)
+  }
+</pre>
+<p>The string sequence in the code above mutates buts the compiler does the mutation. The same goes for the position variable that is just a count concatenated to the end of the sequence string.</p>
+<h3>Pass the State Token as a Returned Value</h3>
+<p>The following code needs to do two things when a target digit is found:</p>
+<ol>
+	<li>Update the product</li>
+	<li>Change the target digit</li>
+</ol>
+<pre>private def calcProduct( targetDigitPos: Int,
+                         sequence: String,
+                         totalSeqLength: Int,
+                         product: Int) = {
+    if ( isDigitInSequence( targetDigitPos, sequence, totalSeqLength ) ) {
+      val offset = totalSeqLength - targetDigitPos
+      val digit = sequence charAt ( sequence.length - offset - 1 )
+
+      // The tuple that contains the product and the target digit acts as a state token
+      // to track the machine state without modifying any variables...
+      (product * ( digit.toInt - 48 ), targetDigitPos * 10)
+    } else
+      (product, targetDigitPos)
+}
+</pre>
+<p>If the target digit is not found then the product and target digit remain unaltered. Since the function only returns one value, the tuple is what I would call the state token.</p>
+<p>The technique can be used with Java if there is not too much tail recursion. This will cause a stack overflow if the recursion is too deep. Eliminating mutations in Scala seems to be quite straight forward. Java 8 is more problematic because it does not support tail recursion optimization.</p>
+<p>If you want more examples of Scala code, please visit <a href="https://github.com/HaroldAlmon/ProjectEulerScala/tree/master/src/main/scala/com/translationdata" target="_blank">my GitHub site</a> for more examples of mutation free Scala code.</p>
+</body>
+</html>
