@@ -139,18 +139,19 @@ final BiFunction<Integer, Integer, Integer> columnProduct = (row, col) -> {
 };
 </pre>
 <p>
-Unfortunately Java 8 does not support a <strong>TriFunction</strong> type that I need to pass a third parameter into the lambda expression so I left the lambda expressions as is. 
+Unfortunately, Java 8 does not support a <strong>TriFunction</strong> type that I need to pass a third parameter into the lambda expression so I left the lambda expressions as is.
+Notice that the Java BiFunctions are hard coded to calculate the product using four cells. I think I can fix this later by using nested lambda expressions. 
 </p>
 <h3>Scala Version</h3>
 For my Scala version, I decided to convert the Java Stream code to for-comprehensions that resulted in code that is shorter and, I think, easier to read. There is just one function to calculate the product that selects the appropriate cells in the matrix and applies a lambda expression to calculate the product. When I look at it, it makes me wonder when Java is going to get for-comprehensions.
 <h3>Matrix Product</h3>
 <pre>
- def matrixProduct(matrix: Array[Array[Int]], calcProduct: (Int, Int, Int) => Long, rowBuffer:Int, columnBuffer:Int) = {
-   (for (row <- 0 to matrix.length - rowBuffer - 1;
-         col <- 0 to matrix(0).length - columnBuffer - 1)
-     yield calcProduct.apply(row, col, max(rowBuffer, columnBuffer)))
-     .max
- }
+def matrixProduct(matrix: Array[Array[Int]], calcProduct: (Int, Int, Int) => Long, rowBuffer:Int, columnBuffer:Int) = {
+  (for (row <- 0 to matrix.length - rowBuffer - 1;
+        col <- 0 to matrix(0).length - columnBuffer - 1)
+    yield calcProduct.apply(row, col, max(rowBuffer, columnBuffer)))
+    .max
+}
 </pre>
 <h3>Conclusion</h3>
 <p>
