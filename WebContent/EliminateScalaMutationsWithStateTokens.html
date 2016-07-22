@@ -10,7 +10,22 @@
 <p>If functional programming has no side effects, how can the program perform any useful work?</p>
 <h3>Scala with Mutations</h3>
 <p>I faced the problem of tracking two variables that change state in ProjectEuler Problem 40. <a href="https://github.com/HaroldAlmon/ProjectEulerScala/blob/36a5f7047b946e4b62808c865959c2b099fa08d8/src/main/scala/com/translationdata/p040/P040_ChampernownesConstant.scala" target="_blank">The initial solution</a> uses Scala vars that changed state.</p>
-<p>Here is part of the Scala code with mutating vars:</p>
+<h3>The Mutation Problem</h3>
+<p>Most non-trivial need to mutate code.  the sequence is something like:</p>
+<pre>
+def workerTask(var state) {
+for ( i <- 1 to 100 ) {
+    state = new State(doSomeWork)
+}
+</pre>
+<p>How do we stop the mutation of the state var? We can stop the mutation by adding a new immutable variable. We also need to remove the for-loop.</p>
+<pre>
+def workerTask(var state) {
+    val stateNew = new State(doSomeWork)
+}
+</pre>
+<p>This works but the loop is gone so only one state transition can take place. We need to just do one of these state transitions in the function but we also need to repeat the function to make more state transition.</p>
+<p>How? Let's look at some code I wrote that solves a math problem.</p>
 <pre>object P040_ChampernownesConstant {
   def main(args: Array[String]) = champernownesConstant
 
@@ -20,9 +35,10 @@
 val targetDigits = Array( 1, 10, 100, 1000, 10000, 100000, 10000000 )
 </pre>
 <p>Notice the two vars. After studying how factorials are implemented with tail recursion, how to to eliminate the mutations became clear.</p>
+
 <h3>State Tokens</h3>
 <p><a href="https://github.com/HaroldAlmon/ProjectEulerScala/blob/master/src/main/scala/com/translationdata/p040/P040_ChampernownesConstant.scala" target="_blank">My mutation free solution</a> contains a tuple with two scalars and essentially forms a vector. Another alternative would be to create a case class to hold the state variables. Whenever the state needs to change, a new tuple or case class is generated to absorb the changes.</p>
-<p>I view the tuple or the case class as a state token. I am calling it a state token because the item is passed from one function to another and that is what a token represents. The state tokens are always modified by creating a new state token from the old so state tokens are never mutated. If you look at the function call, the old tuple plus the changes are passed to another function that constructs a new tuple with a new state.</p>
+<p>I view the tuple or the case class as a state token. I am calling it a state token because the item is passed from one function to another. That is what a token represents, something passed from one entity to another. The state tokens are always modified by creating a new state token from the old so state tokens are never mutated. If you look at the function call, the old tuple plus the changes are passed to another function that constructs a new tuple with a new state.</p>
 <p>That's why functional programs perform useful work. Mutations occur, but the compiler tracks the mutation not the developer.</p>
 <p>Two basic techniques to avoid mutations when using a state token are:</p>
 <ol>
@@ -31,6 +47,7 @@ val targetDigits = Array( 1, 10, 100, 1000, 10000, 100000, 10000000 )
 </ol>
 <p>Here are examples of each.</p>
 <h3>Pass a State Token to Another Function</h3>
+<p>The string sequence in the code below mutates but the compiler does the mutation. The mutation occurs in the last line that is the recursive call to makeSequenceImpl. The same goes for the position variable that is just a count concatenated to the end of the sequence string. The two variables involved, sequence and position, so not mutate.</p>
 <pre>  private def makeSequence(startNum:Int):String = {
     val sequence = makeSequenceImpl("", startNum, startNum + SEQUENCESIZE)
     sequence
@@ -44,7 +61,23 @@ val targetDigits = Array( 1, 10, 100, 1000, 10000, 100000, 10000000 )
     makeSequenceImpl(sequence + position.toString, position + 1, seqLimit)
   }
 </pre>
-<p>The string sequence in the code above mutates buts the compiler does the mutation. The same goes for the position variable that is just a count concatenated to the end of the sequence string.</p>
+<p>To make this easier to see, here is the same code with the mutations assigned to state token variables.</p>
+<pre>  private def makeSequence(startNum:Int):String = {
+    val sequence = makeSequenceImpl("", startNum, startNum + SEQUENCESIZE)
+    sequence
+  }
+
+  @tailrec private def makeSequenceImpl(sequence:String,
+                                position:Int,
+                                seqLimit: Int): String = {
+    if ( position >= seqLimit )
+      return sequence
+    val sequenceStateToken = sequence + position.toString
+    val positionStateToken = position + 1
+    makeSequenceImpl(sequenceStateToken, positionStateToken, seqLimit)
+  }
+</pre>
+<p>The state tokens are easier to see but I had to create two extra variables. In any case, recursion is what makes this possible. Recursion gives us the repetition we need with the nastiness of mutable variables.</p>
 <h3>Pass the State Token as a Returned Value</h3>
 <p>The following code needs to do two things when a target digit is found:</p>
 <ol>
