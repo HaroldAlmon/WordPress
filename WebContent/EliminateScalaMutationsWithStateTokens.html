@@ -11,21 +11,22 @@
 <h3>Scala with Mutations</h3>
 <p>I faced the problem of tracking two variables that change state in ProjectEuler Problem 40. <a href="https://github.com/HaroldAlmon/ProjectEulerScala/blob/36a5f7047b946e4b62808c865959c2b099fa08d8/src/main/scala/com/translationdata/p040/P040_ChampernownesConstant.scala" target="_blank">The initial solution</a> uses Scala vars that changed state.</p>
 <h3>The Mutation Problem</h3>
-<p>Most non-trivial need to mutate code.  the sequence is something like:</p>
+<p>Most non-trivial need to mutate code. The sequence is something like:</p>
 <pre>
 def workerTask(var state) {
 for ( i <- 1 to 100 ) {
     state = new State(doSomeWork)
 }
 </pre>
-<p>How do we stop the mutation of the state var? We can stop the mutation by adding a new immutable variable. We also need to remove the for-loop.</p>
+<p>How do we stop the mutation of the <em>state var</em>? We can stop the mutation by adding a new immutable variable. We also need to remove the for-loop.</p>
 <pre>
 def workerTask(var state) {
     val stateNew = new State(doSomeWork)
 }
 </pre>
-<p>This works but the loop is gone so only one state transition can take place. We need to just do one of these state transitions in the function but we also need to repeat the function to make more state transition.</p>
-<p>How? Let's look at some code I wrote that solves a math problem.</p>
+<p>This works but the loop is gone so only one state transition can take place. We need to do just one of these state transitions in the function but we also need to repeat the function to make more state transition.</p>
+<p>How?</p>
+<p>Let's look at some code I wrote that solves a math problem.</p>
 <pre>object P040_ChampernownesConstant {
   def main(args: Array[String]) = champernownesConstant
 
@@ -37,17 +38,20 @@ val targetDigits = Array( 1, 10, 100, 1000, 10000, 100000, 10000000 )
 <p>Notice the two vars. After studying how factorials are implemented with tail recursion, how to to eliminate the mutations became clear.</p>
 
 <h3>State Tokens</h3>
-<p><a href="https://github.com/HaroldAlmon/ProjectEulerScala/blob/master/src/main/scala/com/translationdata/p040/P040_ChampernownesConstant.scala" target="_blank">My mutation free solution</a> contains a tuple with two scalars and essentially forms a vector. Another alternative would be to create a case class to hold the state variables. Whenever the state needs to change, a new tuple or case class is generated to absorb the changes.</p>
-<p>I view the tuple or the case class as a state token. I am calling it a state token because the item is passed from one function to another. That is what a token represents, something passed from one entity to another. The state tokens are always modified by creating a new state token from the old so state tokens are never mutated. If you look at the function call, the old tuple plus the changes are passed to another function that constructs a new tuple with a new state.</p>
+<p><a href="https://github.com/HaroldAlmon/ProjectEulerScala/blob/master/src/main/scala/com/translationdata/p040/P040_ChampernownesConstant.scala" target="_blank">My mutation free solution</a> contains a tuple with two scalars and essentially forms a vector. Another alternative would be to create a case class to hold the state variables. Whenever the state needs to change, a new tuple generated to absorb the changes.</p>
+<p>I view the tuple as a state token. I am calling it a state token because the item is passed from one function to another. That is what a token represents, something passed from one entity to another. The state tokens are always modified by creating a new state token from the old so state tokens are never mutated. If you look at the function call, the old tuple plus the changes are passed to another function that constructs a new tuple with a new state.</p>
 <p>That's why functional programs perform useful work. Mutations occur, but the compiler tracks the mutation not the developer.</p>
-<p>Two basic techniques to avoid mutations when using a state token are:</p>
+<p>If you use a language that does not support tuples, you can still use this pattern. Just use a class, structure, or list to contain multiple values. In Scala, the case class is perfect since the value in the class are immutable. Many languages support classes and those that do not usually support some kind of aggregation using arrays or lists.</p> 
+<p>Three basic techniques to avoid mutations when using a state token are:</p>
 <ol>
 	<li>Pass a State Token to Another Function</li>
 	<li>Return a State Token from a Function</li>
+	<li>Use Recursion to Eliminate for and while-loops</li>
 </ol>
 <p>Here are examples of each.</p>
+
 <h3>Pass a State Token to Another Function</h3>
-<p>The string sequence in the code below mutates but the compiler does the mutation. The mutation occurs in the last line that is the recursive call to makeSequenceImpl. The same goes for the position variable that is just a count concatenated to the end of the sequence string. The two variables involved, sequence and position, so not mutate.</p>
+<p>The string sequence in the code below mutates but the compiler does the mutation. The mutation occurs in the last line that is the recursive call to makeSequenceImpl. The same goes for the <em>position</em> variable that is just a count concatenated to the end of the sequence string. The two variables involved, <em>sequence</em> and <em>position</em>, so not mutate.</p>
 <pre>  private def makeSequence(startNum:Int):String = {
     val sequence = makeSequenceImpl("", startNum, startNum + SEQUENCESIZE)
     sequence
@@ -78,6 +82,7 @@ val targetDigits = Array( 1, 10, 100, 1000, 10000, 100000, 10000000 )
   }
 </pre>
 <p>The state tokens are easier to see but I had to create two extra variables. In any case, recursion is what makes this possible. Recursion gives us the repetition we need with the nastiness of mutable variables.</p>
+
 <h3>Pass the State Token as a Returned Value</h3>
 <p>The following code needs to do two things when a target digit is found:</p>
 <ol>
@@ -100,7 +105,12 @@ val targetDigits = Array( 1, 10, 100, 1000, 10000, 100000, 10000000 )
 }
 </pre>
 <p>If the target digit is not found then the product and target digit remain unaltered. Since the function only returns one value, the tuple is what I would call the state token.</p>
-<p>The technique can be used with Java if there is not too much tail recursion. This will cause a stack overflow if the recursion is too deep. Eliminating mutations in Scala seems to be quite straight forward. Java 8 is more problematic because it does not support tail recursion optimization.</p>
-<p>If you want more examples of Scala code, please visit <a href="https://github.com/HaroldAlmon/ProjectEulerScala/tree/master/src/main/scala/com/translationdata" target="_blank">my GitHub site</a> for more examples of mutation free Scala code.</p>
+
+<h3>Use Recursion to Eliminate for and while-loops</h3>
+<p>The technique can be used with Java if there is not too much tail recursion. This will cause a stack overflow if the recursion is too deep. Eliminating mutations in Scala seems to be quite straight forward. Java 8 and previous versions are more problematic because they do not support tail recursion optimization.</p>
+<p>I left the state tokens hidden in the calcProduct. If you know Scala, as an exercise, you can easily make the tokens explicit adding a new variable.</p>
+<p>Another thing to try is solving problem 5 in the <a href="http://aperiodic.net/phil/scala/s-99/" target="_blank">S-99: Ninety-Nine Scala Problems</a> list. After that, try reversing strings instead of lists. There are at least three different ways to reverse lists without using mutations.</p>
+<p>So we have the world divided in two, language with tail recursion optimization and those without optimization. Haskell, Scala, and F# have it. Java and C# do not. There is talk of changing the JVM to support tail call optimization. That would be awesome because languages that run on the JVM could fully implement this feature.</p>
+<p>If you want more examples of mutation free Scala code, please visit <a href="https://github.com/HaroldAlmon/ProjectEulerScala/tree/master/src/main/scala/com/translationdata" target="_blank">my GitHub site</a></p>
 </body>
 </html>
