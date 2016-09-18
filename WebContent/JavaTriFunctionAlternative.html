@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+<p>When I coded a solution to Project Euler Problem 11, I used a Java <em>BiFunction</em> to create a lambda expression with two parameters. I then needed a Java <em>TriFunction</em> to pass three parameters. Java 8 did not have one. I had to get my article published so I left the code as is. This meant that the code that multiplied matrix cells was coded to mutiply four cells.</p>
+<p>In order to mutiply an arbitrary number of cells, I changed the solution to use curried functions.</p>
+<h3>Lambdas in Scala</h3>
+<p>Defining a a three parameter standalone lambda expression in Scala is straightforward:</p>
+<pre>val columnProduct = (row:Int, col:Int, buffer:Int) =>
+    (for(offset</pre>
+<p>or a more simple example:</p>
+<pre>val product = (x:Int, y:Int, z:Int) => x * y * z
+</pre>
+<p>A Scala lambda expression passed as a function parameter is even easier to read. It's obvious that the <em>calcProduct</em> lambda expression below in the argument list takes three Ints and returns a Long.</p>
+<pre>def matrixProduct(matrix: Array[Array[Int]], calcProduct: (Int, Int, Int) => Long, rowBuffer:Int, columnBuffer:Int) = {
+    (for (row</pre>
+<h3>Lambdas in Java</h3>
+<p>A Java alternative to the <em>TriFunction</em> is curried functions. The Java syntax is not as elegant as what is possible in Scala but it gets the job done. It is possible to code a <em>TriFunction</em> but for this article, I want to discuss curried functions.</p>
+<p>Here is an example of a <em>BiFunction</em> with two parameters that can be converted to three inputs if we use curried functions:</p>
+<pre>final BiFunction<Integer, Integer, Integer> columnProduct = 
+    (row, col) ->   matrix[row][col] 
+                  * matrix[row][col + 1] 
+                  * matrix[row][col + 2] 
+                  * matrix[row][col + 3];
+</pre>
+<h3>Use Curried Functions Instead of a Java TriFunction</h3>
+<p>The purpose of the expression to calculate the product of four adjacent matrix cells. Notice that the number of cells is hard coded to four. This can be generalized by passing in the cell count and using curried functions.</p>
+<pre>private final Function<Integer, 
+              Function<Integer, 
+              Function<Integer, Integer>>> columnProduct = 
+                row -> col -> productLength -> columnProductImpl(row, col, productLength, 1);
+    
+    private int columnProductImpl(int row, int col, int columnDelta, int product) {
+        if (columnDelta < 0)
+            return product;
+        return columnProductImpl(row, col, columnDelta - 1, product * matrix[row][col + columnDelta]);
+    }
+</pre>
+<p>If we have:</p>
+<pre>Function<Integer, 
+Function<Integer, Integer>> columnProduct = row -> col -> columnProductImpl(row, col);
+</pre>
+<p>This means that we have a lambda expression that takes an Integer input and returns another lambda expression. The returned lambda expression takes an Integer input and returns an Integer.</p>
+<p>Let's add some parentheses to make this clearer:</p>
+<pre>row -> (col -> columnProductImpl(row, col));
+</pre>
+<p>So row is the input and (col -> columnProductImpl(row, col)) is the returned value. This returned value is itself a lambda expression. Looks a lot like function composite, eh?</p>
+<h3>How to Call a Java Curried Function</h3>
+<p>How do we call a lambda expression from a function? Look at the example below. The last parameter to <em>calculateCellProduct</em> is a lambda expression. That lambda is passed as a parameter to to the <em>map()</em> function by calling the apply function. This is the same syntax used to call a lambda expression in Scala.</p>
+<pre>private int calculateCellProduct(int row, 
+                                      int productLen, 
+                                      final int[][] matrix, 
+                                      Function<Integer, 
+                                      Function<Integer, 
+                                      Function<Integer, Integer>>> calcProduct) {
+    return IntStream.range(0, matrix[0].length - (productLen + 1))
+		    .map( col -> calcProduct.apply(row).apply(col).apply(productLen) )
+		    .max()
+		    .getAsInt();
+}
+</pre>
+<h3>How map() Applies the Lambdas</h3>
+<p>So what is happening in the <em>map()</em> function? The evaluation proceeds as follows:</p>
+<ul>
+	<li>calcProduct.apply(row) binds to the row argument to a two argument function that takes col and productLen</li>
+	<li>apply(col) takes the two argument function and binds the col argument to a one argument function that takes productLen</li>
+	<li>apply(productLen) evaluates the single argument function with the single productLen argument and the two bound arguments</li>
+</ul>
+<p>As you can see defining nested lambda expressions gets rather verbose. The payoff though, is the invocation statement that is relatively easy to read. The <a href="https://github.com/HaroldAlmon/ProjectEulerJavaFunc/blob/8a9a8daf1d7dce6b883a50d4aff2fb09a3c382c5/src/main/java/com/translationdata/p010/P011_LargestProductCurried.java" target="_blank">final version</a> of the program is pretty verbose but there is another solution that I will discuss shortly.</p>
+<h3>Making the Program Simpler</h3>
+<p>Java has many Functional Interfaces to support functions. Some of them are designed to automatically box primitives. One of these, IntFunction, can simplify the program above. Since the input type of the lambda is always an Integer, using IntFunction and IntUnaryOperator makes the program a bit shorter and simpler.</p>
+<p>Notice the following pattern in the code example:</p>
+<pre>
+Function<Integer, 
+Function<Integer, 
+Function<Integer, Integer>>>; 
+</pre>
+<p>Since the program just processes Integers, the code can be simplified by using the following pattern.</p>
+<pre>
+IntFunction< 
+IntFunction< IntUnaryOperator>>
+</pre>
+<p>IntFunction takes an Integer input and a type R return parameter whereas Function<T,R> has an input T and return R parameter. IntUnaryOperator takes a single Integer parameter and returns an Integer. Limiting the functions in the program reduces the amount of boilerplate code quite a bit.</p>
+<p>The <a href="https://github.com/HaroldAlmon/ProjectEulerJavaFunc/blob/master/src/main/java/com/translationdata/p010/P011_LargestProductCurried.java">final result</a> is simpler. I think Java 8's functional syntax is somewhat messy. Instead of consistently calling <em>apply()</em> to call a lambda there is also a call to <em>applyAsInt()</em>. These must be some reason for this but I am not sure what the designers of Java 8 were trying to accomplish. However, Java 8 brings some degree of function programming to the Java domain.</p>
+<p>You can switch to Scala, Haskell, or Clojure but those languages require a huge transitional effort for large companies. The sane course for those enterprises is to remain with Java and live with the quirky syntax.</p>
+<p>Back to the original point of using the lambdas. We now have a program that can multiple an arbitrary numbers of cells in the matrix.</p>
+</body>
+</html>
